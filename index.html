@@ -9,18 +9,11 @@
     #user-info { margin-bottom: 15px; }
     #addSkinForm { margin-bottom: 20px; }
     table { border-collapse: collapse; width: 100%; max-width: 900px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; cursor: default; }
-    th.sortable { cursor: pointer; background: #ddd; }
-    th.sortable:hover { background: #ccc; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #eee; }
     .profit { background-color: #d4f8d4; }   /* vihreä voitto */
     .loss { background-color: #f8d4d4; }     /* punainen tappio */
     button { cursor: pointer; }
-    #filters {
-      margin-bottom: 15px;
-    }
-    #filters label {
-      margin-right: 15px;
-    }
   </style>
 </head>
 <body>
@@ -77,34 +70,17 @@
     <button type="button" id="cancelEdit">Peruuta</button>
   </form>
 
-  <!-- Lisätty hakukenttä ja suodatus -->
-  <div id="filters" style="display:none;">
-    <label>
-      Haku skinin nimellä: 
-      <input type="text" id="searchInput" placeholder="Kirjoita nimi..." />
-    </label>
-
-    <label>
-      Suodatin:
-      <select id="filterSelect">
-        <option value="all">Kaikki</option>
-        <option value="profit">Voitolliset</option>
-        <option value="loss">Tappiolliset</option>
-      </select>
-    </label>
-  </div>
-
   <h2>Skinien lista</h2>
 
   <table id="skinsTable">
     <thead>
       <tr>
-        <th class="sortable" data-key="name">Skin &#x25B2;&#x25BC;</th>
+        <th>Skin</th>
         <th>Kulumamalli</th>
-        <th class="sortable" data-key="buyPrice">Osto (€) &#x25B2;&#x25BC;</th>
-        <th class="sortable" data-key="sellPrice">Myynti (€) &#x25B2;&#x25BC;</th>
-        <th class="sortable" data-key="profit">Voitto (€) &#x25B2;&#x25BC;</th>
-        <th class="sortable" data-key="profitPercent">Voitto (%) &#x25B2;&#x25BC;</th>
+        <th>Osto (€)</th>
+        <th>Myynti (€)</th>
+        <th>Voitto (€)</th>
+        <th>Voitto (%)</th>
         <th>Oston lähde</th>
         <th>Myynnin lähde</th>
         <th>Toiminnot</th>
@@ -141,7 +117,6 @@
   const userNameSpan = document.getElementById('user-name');
   const form = document.getElementById('addSkinForm');
   const tableBody = document.querySelector('#skinsTable tbody');
-  const filtersDiv = document.getElementById('filters');
 
   // Lomake kentät
   const skinNameInput = document.getElementById('skinName');
@@ -153,15 +128,8 @@
   const editIndexInput = document.getElementById('editIndex');
   const cancelEditBtn = document.getElementById('cancelEdit');
 
-  // Hakusuodatin kentät
-  const searchInput = document.getElementById('searchInput');
-  const filterSelect = document.getElementById('filterSelect');
-
   let skins = [];
   let user = null;
-
-  // Sorttaus tila
-  let currentSort = { key: null, asc: true };
 
   // Päivitä UI kirjautumistilan mukaan
   function updateUI(u) {
@@ -171,14 +139,12 @@
       loginBtn.style.display = 'none';
       userNameSpan.textContent = user.displayName || user.email;
       form.style.display = 'block';
-      filtersDiv.style.display = 'block';
       loadSkins();
     } else {
       userInfo.style.display = 'none';
       loginBtn.style.display = 'inline-block';
       userNameSpan.textContent = '';
       form.style.display = 'none';
-      filtersDiv.style.display = 'none';
       clearTable();
       skins = [];
     }
@@ -222,75 +188,130 @@
     return { profit, profitPercent };
   }
 
-  // Sorttausfunktio
-  function sortTable(key) {
-    if(currentSort.key === key) {
-      currentSort.asc = !currentSort.asc; // Vaihda suuntaa jos sama sarake
-    } else {
-      currentSort.key = key;
-      currentSort.asc = true;
-    }
-    renderTable();
-  }
-
-  // Lisää eventlistenerit otsikoihin
-  document.querySelectorAll('th.sortable').forEach(th => {
-    th.addEventListener('click', () => {
-      const key = th.getAttribute('data-key');
-      sortTable(key);
-    });
-  });
-
   // Päivittää taulukon näkyväksi
   function renderTable() {
     clearTable();
-
-    const searchTerm = searchInput.value.trim().toLowerCase();
-    let filteredSkins = skins.filter(skin =>
-      skin.name.toLowerCase().includes(searchTerm)
-    );
-
-    // Suodatetaan voitolliset / tappiolliset
-    if(filterSelect.value === 'profit') {
-      filteredSkins = filteredSkins.filter(skin => skin.sellPrice - skin.buyPrice > 0);
-    } else if(filterSelect.value === 'loss') {
-      filteredSkins = filteredSkins.filter(skin => skin.sellPrice - skin.buyPrice < 0);
-    }
-
-    // Sortataan jos valittu
-    if(currentSort.key) {
-      filteredSkins.sort((a,b) => {
-        let valA, valB;
-
-        if(currentSort.key === 'profit') {
-          valA = a.sellPrice - a.buyPrice;
-          valB = b.sellPrice - b.buyPrice;
-        } else if(currentSort.key === 'profitPercent') {
-          valA = ((a.sellPrice - a.buyPrice) / a.buyPrice) || 0;
-          valB = ((b.sellPrice - b.buyPrice) / b.buyPrice) || 0;
-        } else {
-          valA = a[currentSort.key];
-          valB = b[currentSort.key];
-        }
-
-        if(typeof valA === 'string') valA = valA.toLowerCase();
-        if(typeof valB === 'string') valB = valB.toLowerCase();
-
-        if(valA < valB) return currentSort.asc ? -1 : 1;
-        if(valA > valB) return currentSort.asc ? 1 : -1;
-        return 0;
-      });
-    }
-
-    filteredSkins.forEach((skin, i) => {
+    skins.forEach((skin, i) => {
       const tr = document.createElement('tr');
+
       const { profit, profitPercent } = calculateProfit(skin.buyPrice, skin.sellPrice);
 
-      tr.innerHTML = `
+      tr.innerHTML = 
         <td>${skin.name}</td>
         <td>${skin.wearLevel}</td>
         <td>${skin.buyPrice.toFixed(2)}</td>
         <td>${skin.sellPrice.toFixed(2)}</td>
-        <
-</body>
-</html>
+        <td class="${profit >= 0 ? 'profit' : 'loss'}">${profit.toFixed(2)}</td>
+        <td class="${profit >= 0 ? 'profit' : 'loss'}">${profitPercent.toFixed(2)}%</td>
+        <td>${skin.buySource}</td>
+        <td>${skin.sellSource}</td>
+        <td>
+          <button onclick="editSkin(${i})">Muokkaa</button>
+          <button onclick="deleteSkin(${i})">Poista</button>
+        </td>
+      ;
+      tableBody.appendChild(tr);
+    });
+  }
+
+  function clearTable() {
+    tableBody.innerHTML = '';
+  }
+
+  // Lisää tai päivitä skin Firestoreen
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    if(!user) {
+      alert("Et ole kirjautunut!");
+      return;
+    }
+    const name = skinNameInput.value.trim();
+    const wearLevel = wearLevelInput.value;
+    const buyPrice = parseFloat(buyPriceInput.value);
+    const sellPrice = parseFloat(sellPriceInput.value);
+    const buySource = buySourceInput.value;
+    const sellSource = sellSourceInput.value;
+    const editIndex = parseInt(editIndexInput.value);
+
+    if(!name || isNaN(buyPrice) || isNaN(sellPrice)) {
+      alert("Täytä kaikki kentät oikein!");
+      return;
+    }
+
+    const skinObj = { 
+      uid: user.uid,
+      name, 
+      wearLevel, 
+      buyPrice, 
+      sellPrice, 
+      buySource, 
+      sellSource 
+    };
+
+    if(editIndex >= 0 && skins[editIndex]) {
+      // Päivitä Firestore-dokumentti
+      const id = skins[editIndex].id;
+      db.collection('skins').doc(id).set(skinObj)
+        .then(() => {
+          skins[editIndex] = { ...skinObj, id };
+          renderTable();
+          clearForm();
+        })
+        .catch(err => alert("Virhe päivitettäessä: " + err.message));
+    } else {
+      // Lisää uusi dokumentti
+      db.collection('skins').add(skinObj)
+        .then(docRef => {
+          skins.push({ ...skinObj, id: docRef.id });
+          renderTable();
+          clearForm();
+        })
+        .catch(err => alert("Virhe lisättäessä: " + err.message));
+    }
+  };
+
+  // Tyhjennä lomake ja nollaa muokkausindeksi
+  function clearForm() {
+    skinNameInput.value = '';
+    wearLevelInput.value = 'Factory New';
+    buyPriceInput.value = '';
+    sellPriceInput.value = '';
+    buySourceInput.value = 'CSFloat';
+    sellSourceInput.value = 'CSFloat';
+    editIndexInput.value = -1;
+  }
+
+  // Peruuta muokkaus
+  cancelEditBtn.onclick = () => {
+    clearForm();
+  };
+
+  // Muokkaa skin tietoja
+  window.editSkin = function(i) {
+    const skin = skins[i];
+    skinNameInput.value = skin.name;
+    wearLevelInput.value = skin.wearLevel;
+    buyPriceInput.value = skin.buyPrice;
+    sellPriceInput.value = skin.sellPrice;
+    buySourceInput.value = skin.buySource;
+    sellSourceInput.value = skin.sellSource;
+    editIndexInput.value = i;
+  };
+
+  // Poista skin Firestoresta
+  window.deleteSkin = function(i) {
+    if(!user) {
+      alert("Et ole kirjautunut!");
+      return;
+    }
+    if(confirm("Haluatko varmasti poistaa tämän skinin?")) {
+      const id = skins[i].id;
+      db.collection('skins').doc(id).delete()
+        .then(() => {
+          skins.splice(i, 1);
+          renderTable();
+        })
+        .catch(err => alert("Virhe poistettaessa: " + err.message));
+    }
+  };
+</script>
