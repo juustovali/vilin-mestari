@@ -151,7 +151,7 @@
       userNameSpan.textContent = user.displayName || user.email;
       form.style.display = 'block';
       searchInput.style.display = 'inline-block';
-      loadSkins();
+      subscribeToSkins();  // Reaaliaikainen kuuntelu Firestoreen
     } else {
       userInfo.style.display = 'none';
       loginBtn.style.display = 'inline-block';
@@ -161,14 +161,22 @@
       clearTable();
       skins = [];
       filteredSkins = [];
+      // Lopetetaan realtime kuuntelu uloskirjautuessa
+      if(window.unsubscribeSkins) {
+        window.unsubscribeSkins();
+        window.unsubscribeSkins = null;
+      }
     }
   }
 
-  // Lataa skinit Firestoresta
-  function loadSkins() {
+  // Reaaliaikainen päivitys Firestoresta
+  function subscribeToSkins() {
     if(!user) return;
-    db.collection('skins').where('uid', '==', user.uid).get()
-      .then(querySnapshot => {
+    if(window.unsubscribeSkins) window.unsubscribeSkins();
+
+    window.unsubscribeSkins = db.collection('skins')
+      .where('uid', '==', user.uid)
+      .onSnapshot(querySnapshot => {
         skins = [];
         querySnapshot.forEach(doc => {
           const data = doc.data();
@@ -177,10 +185,9 @@
         });
         filteredSkins = [...skins];
         renderTable();
-      })
-      .catch(err => {
-        console.error("Virhe skinejä ladattaessa:", err);
-        alert("Virhe skinejä ladattaessa: " + err.message);
+      }, err => {
+        console.error("Virhe reaaliaikaisessa päivityksessä:", err);
+        alert("Virhe reaaliaikaisessa päivityksessä: " + err.message);
       });
   }
 
@@ -246,164 +253,5 @@
         <td class="${profit >= 0 ? 'profit' : 'loss'}">${profit.toFixed(2)}</td>
         <td class="${profit >= 0 ? 'profit' : 'loss'}">${profitPercent.toFixed(2)}%</td>
         <td>${skin.buySource}</td>
-        <td>${skin.sellSource}</td>
-        <td>
-          <button onclick="editSkin(${i})">Muokkaa</button>
-          <button onclick="deleteSkin(${i})">Poista</button>
-        </td>
-      `;
-      tableBody.appendChild(tr);
-    });
-  }
+        <td>${skin.sellSource}</td
 
-  function clearTable() {
-    tableBody.innerHTML = '';
-  }
-
-  // Lisää tai päivitä skin Firestoreen
-  form.onsubmit = (e) => {
-    e.preventDefault();
-    if(!user) {
-      alert("Et ole kirjautunut!");
-      return;
-    }
-    const name = skinNameInput.value.trim();
-    const wearLevel = wearLevelInput.value;
-    const buyPrice = parseFloat(buyPriceInput.value);
-    const sellPrice = parseFloat(sellPriceInput.value);
-    const buySource = buySourceInput.value;
-    const sellSource = sellSourceInput.value;
-    const editIndex = parseInt(editIndexInput.value);
-
-    if(!name || isNaN(buyPrice) || isNaN(sellPrice)) {
-      alert("Täytä kaikki kentät oikein!");
-      return;
-    }
-
-    const skinObj = { 
-      uid: user.uid,
-      name, 
-      wearLevel, 
-      buyPrice, 
-      sellPrice, 
-      buySource, 
-      sellSource 
-    };
-
-    if(editIndex >= 0 && filteredSkins[editIndex]) {
-      // Päivitä Firestore-dokumentti
-      const id = filteredSkins[editIndex].id;
-      db.collection('skins').doc(id).set(skinObj)
-        .then(() => {
-          // Päivitetään myös skins-taulukko
-          const idx = skins.findIndex(s => s.id === id);
-          if(idx >= 0) skins[idx] = { ...skinObj, id };
-          filteredSkins[editIndex] = { ...skinObj, id };
-          renderTable();
-          clearForm();
-        })
-        .catch(err => {
-          console.error("Virhe päivitettäessä:", err);
-          alert("Virhe päivitettäessä: " + err.message);
-        });
-    } else {
-      // Lisää uusi dokumentti
-      db.collection('skins').add(skinObj)
-        .then(docRef => {
-          skins.push({ ...skinObj, id: docRef.id });
-          filteredSkins.push({ ...skinObj, id: docRef.id });
-          renderTable();
-          clearForm();
-        })
-        .catch(err => {
-          console.error("Virhe lisättäessä:", err);
-          alert("Virhe lisättäessä: " + err.message);
-        });
-    }
-  };
-
-  // Tyhjennä lomake ja nollaa muokkausindeksi
-  function clearForm() {
-    skinNameInput.value = '';
-    wearLevelInput.value = 'Factory New';
-    buyPriceInput.value = '';
-    sellPriceInput.value = '';
-    buySourceInput.value = 'CSFloat';
-    sellSourceInput.value = 'CSFloat';
-    editIndexInput.value = -1;
-  }
-
-  // Peruuta muokkaus
-  cancelEditBtn.onclick = () => {
-    clearForm();
-  };
-
-  // Muokkaa skin tietoja
-  window.editSkin = function(i) {
-    const skin = filteredSkins[i];
-    skinNameInput.value = skin.name;
-    wearLevelInput.value = skin.wearLevel;
-    buyPriceInput.value = skin.buyPrice;
-    sellPriceInput.value = skin.sellPrice;
-    buySourceInput.value = skin.buySource;
-    sellSourceInput.value = skin.sellSource;
-    editIndexInput.value = i;
-  };
-
-  // Poista skin Firestoresta
-  window.deleteSkin = function(i) {
-    if(!user) {
-      alert("Et ole kirjautunut!");
-      return;
-    }
-    if(confirm("Haluatko varmasti poistaa tämän skinin?")) {
-      const id = filteredSkins[i].id;
-      db.collection('skins').doc(id).delete()
-        .then(() => {
-          // Poistetaan myös taulukot
-          skins = skins.filter(s => s.id !== id);
-          filteredSkins.splice(i, 1);
-          renderTable();
-        })
-        .catch(err => {
-          console.error("Virhe poistettaessa:", err);
-          alert("Virhe poistettaessa: " + err.message);
-        });
-    }
-  };
-
-  // Haku: suodata skinejä nimen perusteella
-  searchInput.oninput = () => {
-    const term = searchInput.value.trim().toLowerCase();
-    if(term === '') {
-      filteredSkins = [...skins];
-    } else {
-      filteredSkins = skins.filter(skin => skin.name.toLowerCase().includes(term));
-    }
-    clearForm();
-    renderTable();
-  };
-
-  // Järjestäminen sarakkeen otsikoista
-  const headers = document.querySelectorAll('#skinsTable thead th[data-sort]');
-  headers.forEach(header => {
-    header.addEventListener('click', () => {
-      const key = header.getAttribute('data-sort');
-      if(currentSort.key === key) {
-        // Vaihda järjestyssuuntaa
-        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-      } else {
-        currentSort.key = key;
-        currentSort.direction = 'asc';
-      }
-      // Päivitä visuaalinen tila
-      headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
-      header.classList.add(currentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc');
-      renderTable();
-    });
-  });
-
-</script>
-
-</body>
-</html>
