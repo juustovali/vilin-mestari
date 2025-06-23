@@ -2,14 +2,72 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Vilin Mestari Sijoitus Voitot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    form {
+      margin-bottom: 2rem;
+    }
+    label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+    }
+    input, select {
+      padding: 0.3rem;
+      width: 200px;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 900px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.4rem 0.6rem;
+      text-align: center;
+    }
+    .profit {
+      background-color: #c8e6c9; /* vihreä */
+    }
+    .loss {
+      background-color: #ffcdd2; /* punainen */
+    }
+    #status {
+      margin-bottom: 1rem;
+    }
+  </style>
   <script type="module">
-    // Firebase SDK:t
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getAuth,
+      signInWithPopup,
+      GoogleAuthProvider,
+      signOut,
+      onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      where,
+      onSnapshot,
+      orderBy,
+      serverTimestamp,
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Firebase asetukset
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDj3YnvlbQPM5yvlYTEohrup65bQCBbwDY",
       authDomain: "vilin-mestari-sijoitus-voitot.firebaseapp.com",
@@ -17,55 +75,114 @@
       storageBucket: "vilin-mestari-sijoitus-voitot.firebasestorage.app",
       messagingSenderId: "912067809877",
       appId: "1:912067809877:web:84c11fc354f5372dcb7adc",
-      measurementId: "G-5683KL29W1"
+      measurementId: "G-5683KL29W1",
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
+    const db = getFirestore(app);
 
-    // Kirjaudu sisään
+    const statusEl = document.getElementById("status");
+    const loginBtn = document.getElementById("login");
+    const logoutBtn = document.getElementById("logout");
+    const form = document.getElementById("skinForm");
+    const tableBody = document.getElementById("skinsTableBody");
+
+    let currentUser = null;
+
     window.login = async () => {
       try {
         await signInWithPopup(auth, provider);
-      } catch (error) {
-        alert("Kirjautuminen epäonnistui: " + error.message);
+      } catch (e) {
+        alert("Kirjautuminen epäonnistui: " + e.message);
       }
     };
 
-    // Kirjaudu ulos
     window.logout = async () => {
       await signOut(auth);
     };
 
-    // Näytetään käyttäjän tila
-    const statusEl = document.getElementById("status");
-    const loginBtn = document.getElementById("login");
-    const logoutBtn = document.getElementById("logout");
-
     onAuthStateChanged(auth, (user) => {
+      currentUser = user;
       if (user) {
         statusEl.textContent = `Kirjautunut: ${user.displayName}`;
         loginBtn.style.display = "none";
         logoutBtn.style.display = "inline-block";
+        form.style.display = "block";
+        loadSkins();
       } else {
         statusEl.textContent = "Et ole kirjautunut";
         loginBtn.style.display = "inline-block";
         logoutBtn.style.display = "none";
+        form.style.display = "none";
+        tableBody.innerHTML = "";
       }
     });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentUser) {
+        alert("Kirjaudu ensin sisään.");
+        return;
+      }
+
+      const nimi = form.skinName.value.trim();
+      const kuluma = form.wear.value;
+      const osto = parseFloat(form.purchasePrice.value);
+      const myynti = parseFloat(form.salePrice.value);
+      const ostolähde = form.purchaseSource.value;
+      const myyntilähde = form.saleSource.value;
+
+      if (!nimi || isNaN(osto) || isNaN(myynti)) {
+        alert("Täytä kaikki kentät oikein.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "users", currentUser.uid, "skins"), {
+          nimi,
+          kuluma,
+          osto,
+          myynti,
+          ostolähde,
+          myyntilähde,
+          createdAt: serverTimestamp(),
+        });
+        form.reset();
+      } catch (error) {
+        alert("Virhe tallennuksessa: " + error.message);
+      }
+    });
+
+    function loadSkins() {
+      const skinsRef = collection(db, "users", currentUser.uid, "skins");
+      const q = query(skinsRef, orderBy("createdAt", "desc"));
+      onSnapshot(q, (snapshot) => {
+        tableBody.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const diff = data.myynti - data.osto;
+          const diffPercent = ((diff / data.osto) * 100).toFixed(2);
+
+          const tr = document.createElement("tr");
+
+          tr.innerHTML = `
+            <td>${data.nimi}</td>
+            <td>${data.kuluma}</td>
+            <td>${data.ostolähde}</td>
+            <td>${data.osto.toFixed(2)}</td>
+            <td>${data.myyntilähde}</td>
+            <td>${data.myynti.toFixed(2)}</td>
+            <td class="${diff >= 0 ? "profit" : "loss"}">${diff.toFixed(2)}</td>
+            <td class="${diff >= 0 ? "profit" : "loss"}">${diffPercent}%</td>
+          `;
+
+          tableBody.appendChild(tr);
+        });
+      });
+    }
   </script>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 2rem;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      margin: 0.5rem;
-      font-size: 1rem;
-    }
-  </style>
 </head>
 <body>
   <h1>Vilin Mestari Sijoitus Voitot</h1>
@@ -73,7 +190,54 @@
   <button id="login" onclick="login()">Kirjaudu Googlella</button>
   <button id="logout" onclick="logout()" style="display:none;">Kirjaudu ulos</button>
 
-  <hr />
-  <p>Tähän lisätään myöhemmin taulukko skineistä ja tallennus Firebaseen.</p>
+  <form id="skinForm" style="display:none;">
+    <label for="skinName">Skinin nimi:</label>
+    <input id="skinName" name="skinName" type="text" required />
+
+    <label for="wear">Kulumamalli:</label>
+    <select id="wear" name="wear" required>
+      <option value="Factory New">Factory New</option>
+      <option value="Minimal Wear">Minimal Wear</option>
+      <option value="Field Tested">Field Tested</option>
+      <option value="Well Worn">Well Worn</option>
+      <option value="Battle Scarred">Battle Scarred</option>
+    </select>
+
+    <label for="purchasePrice">Ostohinta (€):</label>
+    <input id="purchasePrice" name="purchasePrice" type="number" step="0.01" required />
+
+    <label for="purchaseSource">Oston lähde:</label>
+    <select id="purchaseSource" name="purchaseSource" required>
+      <option value="CSFloat">CSFloat</option>
+      <option value="Steam">Steam</option>
+    </select>
+
+    <label for="salePrice">Myyntihinta (€):</label>
+    <input id="salePrice" name="salePrice" type="number" step="0.01" required />
+
+    <label for="saleSource">Myynnin lähde:</label>
+    <select id="saleSource" name="saleSource" required>
+      <option value="CSFloat">CSFloat</option>
+      <option value="Steam">Steam</option>
+    </select>
+
+    <button type="submit">Lisää skini</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Skin</th>
+        <th>Kuluma</th>
+        <th>Oston lähde</th>
+        <th>Ostohinta (€)</th>
+        <th>Myynnin lähde</th>
+        <th>Myyntihinta (€)</th>
+        <th>Ero (€)</th>
+        <th>Ero (%)</th>
+      </tr>
+    </thead>
+    <tbody id="skinsTableBody"></tbody>
+  </table>
 </body>
 </html>
