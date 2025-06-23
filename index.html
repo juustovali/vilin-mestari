@@ -84,39 +84,46 @@
   const form = document.getElementById('skinForm');
   const tableBody = document.querySelector('#skinsTable tbody');
 
+  // Lataa tiedot localStoragesta kun sivu aukeaa
+  const savedSkins = JSON.parse(localStorage.getItem('skins')) || [];
+  savedSkins.forEach(addRowToTable);
+
   form.addEventListener('submit', function(event) {
     event.preventDefault();
 
-    const skinName = document.getElementById('skinName').value.trim();
-    const wear = document.getElementById('wear').value;
-    const buyPrice = parseFloat(document.getElementById('buyPrice').value);
-    const sellPrice = parseFloat(document.getElementById('sellPrice').value);
-    const source = document.getElementById('source').value;
+    const skin = {
+      name: document.getElementById('skinName').value.trim(),
+      wear: document.getElementById('wear').value,
+      buyPrice: parseFloat(document.getElementById('buyPrice').value),
+      sellPrice: parseFloat(document.getElementById('sellPrice').value),
+      source: document.getElementById('source').value,
+    };
 
-    const difference = sellPrice - buyPrice;
-    const percentDiff = buyPrice ? (difference / buyPrice) * 100 : 0;
+    // Tallenna localStorageen
+    savedSkins.push(skin);
+    localStorage.setItem('skins', JSON.stringify(savedSkins));
 
-    // Luo taulukkorivi
-    const tr = document.createElement('tr');
-
-    // Apuluokka voitolle/tappiolle
-    const profitClass = difference >= 0 ? 'profit' : 'loss';
-
-    tr.innerHTML = `
-      <td>${skinName}</td>
-      <td>${wear}</td>
-      <td>${buyPrice.toFixed(2)}</td>
-      <td>${sellPrice.toFixed(2)}</td>
-      <td class="${profitClass}">${difference >= 0 ? '+' : ''}${difference.toFixed(2)}</td>
-      <td class="${profitClass}">${difference >= 0 ? '+' : ''}${percentDiff.toFixed(2)}%</td>
-      <td>${source}</td>
-    `;
-
-    tableBody.appendChild(tr);
-
-    // Tyhjennä lomake
+    addRowToTable(skin);
     form.reset();
   });
+
+  function addRowToTable(skin) {
+    const difference = skin.sellPrice - skin.buyPrice;
+    const percentDiff = skin.buyPrice ? (difference / skin.buyPrice) * 100 : 0;
+    const profitClass = difference >= 0 ? 'profit' : 'loss';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${skin.name}</td>
+      <td>${skin.wear}</td>
+      <td>${skin.buyPrice.toFixed(2)}</td>
+      <td>${skin.sellPrice.toFixed(2)}</td>
+      <td class="${profitClass}">${difference >= 0 ? '+' : ''}${difference.toFixed(2)}</td>
+      <td class="${profitClass}">${difference >= 0 ? '+' : ''}${percentDiff.toFixed(2)}%</td>
+      <td>${skin.source}</td>
+    `;
+    tableBody.appendChild(tr);
+  }
 </script>
 
 </body>
