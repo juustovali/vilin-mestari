@@ -3,10 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <title>Vilin Mestari Sijoitus Voitot</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; background: #f4f4f4; }
+    h1 { color: #2c3e50; }
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 1rem;
+      background: white; box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ccc; padding: 0.5rem; text-align: center;
+    }
+    th {
+      background: #2980b9; color: white;
+    }
+    .profit { background: #d4edda; color: #155724; }
+    .loss { background: #f8d7da; color: #721c24; }
+  </style>
 </head>
 <body>
-  <h1>Tervetuloa Vilin Mestari Sijoitus Voitot -sivulle!</h1>
-  <p>Tämä on sivun ensimmäinen versio.</p>
+  <h1>Vilin Mestari Sijoitus Voitot</h1>
+  <p>Tässä näet Counter-Strike skineihin liittyvät osto- ja myyntitilastot.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Skin</th>
+        <th>Kulumamuoto</th>
+        <th>Osto (€)</th>
+        <th>Myynti (€)</th>
+        <th>Ero (€)</th>
+        <th>Ero (%)</th>
+        <th>Lähde</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>AK-47 Redline</td>
+        <td>Factory New</td>
+        <td>100</td>
+        <td>120</td>
+        <td class="profit">+20</td>
+        <td class="profit">+20%</td>
+        <td>CSfloat</td>
+      </tr>
+      <tr>
+        <td>AWP Asiimov</td>
+        <td>Field-Tested</td>
+        <td>50</td>
+        <td>45</td>
+        <td class="loss">-5</td>
+        <td class="loss">-10%</td>
+        <td>Steam</td>
+      </tr>
+    </tbody>
+  </table>
 </body>
 </html>
-
