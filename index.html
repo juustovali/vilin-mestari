@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fi">
 <head>
   <meta charset="UTF-8" />
@@ -193,10 +193,9 @@
     clearTable();
     skins.forEach((skin, i) => {
       const tr = document.createElement('tr');
-
       const { profit, profitPercent } = calculateProfit(skin.buyPrice, skin.sellPrice);
 
-      tr.innerHTML = 
+      tr.innerHTML = `
         <td>${skin.name}</td>
         <td>${skin.wearLevel}</td>
         <td>${skin.buyPrice.toFixed(2)}</td>
@@ -209,7 +208,7 @@
           <button onclick="editSkin(${i})">Muokkaa</button>
           <button onclick="deleteSkin(${i})">Poista</button>
         </td>
-      ;
+      `;
       tableBody.appendChild(tr);
     });
   }
@@ -315,3 +314,6 @@
     }
   };
 </script>
+
+</body>
+</html>
