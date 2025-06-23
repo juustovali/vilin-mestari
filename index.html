@@ -62,6 +62,7 @@
 
   <button type="submit">Lisää</button>
 </form>
+<div id="summary" style="margin: 20px 0; font-weight: bold;"></div>
 
 <table id="skinsTable">
   <thead>
@@ -72,7 +73,7 @@
       <th>Myynti (€)</th>
       <th>Ero (€)</th>
       <th>Ero (%)</th>
-      <th>Lähde</th>
+      <th>Poista</th>
     </tr>
   </thead>
   <tbody>
@@ -83,10 +84,12 @@
 <script>
   const form = document.getElementById('skinForm');
   const tableBody = document.querySelector('#skinsTable tbody');
+  const summary = document.getElementById('summary');
 
-  // Lataa tiedot localStoragesta kun sivu aukeaa
-  const savedSkins = JSON.parse(localStorage.getItem('skins')) || [];
-  savedSkins.forEach(addRowToTable);
+  let savedSkins = JSON.parse(localStorage.getItem('skins')) || [];
+
+  // Lataa taulukko alussa
+  renderTable();
 
   form.addEventListener('submit', function(event) {
     event.preventDefault();
@@ -99,30 +102,56 @@
       source: document.getElementById('source').value,
     };
 
-    // Tallenna localStorageen
     savedSkins.push(skin);
     localStorage.setItem('skins', JSON.stringify(savedSkins));
-
-    addRowToTable(skin);
+    renderTable();
     form.reset();
   });
 
-  function addRowToTable(skin) {
-    const difference = skin.sellPrice - skin.buyPrice;
-    const percentDiff = skin.buyPrice ? (difference / skin.buyPrice) * 100 : 0;
-    const profitClass = difference >= 0 ? 'profit' : 'loss';
+  function renderTable() {
+    tableBody.innerHTML = "";
+    let totalBuy = 0;
+    let totalSell = 0;
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${skin.name}</td>
-      <td>${skin.wear}</td>
-      <td>${skin.buyPrice.toFixed(2)}</td>
-      <td>${skin.sellPrice.toFixed(2)}</td>
-      <td class="${profitClass}">${difference >= 0 ? '+' : ''}${difference.toFixed(2)}</td>
-      <td class="${profitClass}">${difference >= 0 ? '+' : ''}${percentDiff.toFixed(2)}%</td>
-      <td>${skin.source}</td>
+    savedSkins.forEach((skin, index) => {
+      const difference = skin.sellPrice - skin.buyPrice;
+      const percentDiff = skin.buyPrice ? (difference / skin.buyPrice) * 100 : 0;
+      const profitClass = difference >= 0 ? 'profit' : 'loss';
+
+      totalBuy += skin.buyPrice;
+      totalSell += skin.sellPrice;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${skin.name}</td>
+        <td>${skin.wear}</td>
+        <td>${skin.buyPrice.toFixed(2)}</td>
+        <td>${skin.sellPrice.toFixed(2)}</td>
+        <td class="${profitClass}">${difference >= 0 ? '+' : ''}${difference.toFixed(2)}</td>
+        <td class="${profitClass}">${difference >= 0 ? '+' : ''}${percentDiff.toFixed(2)}%</td>
+        <td>${skin.source}</td>
+        <td><button onclick="deleteSkin(${index})">Poista</button></td>
+      `;
+      tableBody.appendChild(tr);
+    });
+
+    const totalDiff = totalSell - totalBuy;
+    const totalPercent = totalBuy ? (totalDiff / totalBuy) * 100 : 0;
+    const summaryColor = totalDiff >= 0 ? 'green' : 'red';
+
+    summary.innerHTML = `
+      Myyty yhteensä: ${totalSell.toFixed(2)} €<br>
+      Ostettu yhteensä: ${totalBuy.toFixed(2)} €<br>
+      <span style="color:${summaryColor}">
+        Voitto/tappio yhteensä: ${totalDiff.toFixed(2)} € (${totalPercent.toFixed(2)}%)
+      </span>
     `;
-    tableBody.appendChild(tr);
+  }
+
+  function deleteSkin(index) {
+    savedSkins.splice(index, 1);
+    localStorage.setItem('skins', JSON.stringify(savedSkins));
+    renderTable();
   }
 </script>
 
