@@ -1,201 +1,263 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Vilin Mestari Sijoitus Voitot</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-  th { background: #f0f0f0; }
-  .profit { background-color: #d4f4dd; }  /* vihreä voitto */
-  .loss { background-color: #f4d4d4; }    /* punainen tappio */
-  button { margin: 0 3px; }
-  label { margin-right: 10px; }
-  select { margin-right: 20px; }
-  .hidden { display: none; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vilin Mestari Sijoitus Voitot</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #user-info { margin-bottom: 15px; }
+    #addSkinForm { margin-bottom: 20px; }
+    table { border-collapse: collapse; width: 100%; max-width: 900px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #eee; }
+    .profit { background-color: #d4f8d4; }   /* vihreä voitto */
+    .loss { background-color: #f8d4d4; }     /* punainen tappio */
+    button { cursor: pointer; }
+  </style>
 </head>
 <body>
 
-<h1>Vilin Mestari Sijoitus Voitot</h1>
+  <div id="user-info" style="display:none;">
+    Tervetuloa, <span id="user-name"></span>!
+    <button id="logout-btn">Kirjaudu ulos</button>
+  </div>
+  <button id="login-btn">Kirjaudu Googlella</button>
 
-<form id="addSkinForm">
-  <label>
-    Skinin nimi:
-    <input type="text" id="skinName" required />
-  </label>
-  <label>
-    Kulumamalli:
-    <select id="wearCondition" required>
-      <option value="Factory New">Factory New</option>
-      <option value="Minimal Wear">Minimal Wear</option>
-      <option value="Field Tested">Field Tested</option>
-      <option value="Well Worn">Well Worn</option>
-      <option value="Battle Scarred">Battle Scarred</option>
-    </select>
-  </label>
-  <label>
-    Ostohinta (€):
-    <input type="number" id="buyPrice" min="0" step="0.01" required />
-  </label>
-  <label>
-    Myyntihinta (€):
-    <input type="number" id="sellPrice" min="0" step="0.01" required />
-  </label>
-  <button type="submit">Lisää skin</button>
-</form>
+  <form id="addSkinForm" style="display:none;">
+    <h2>Lisää tai muokkaa skin</h2>
+    <input type="hidden" id="editIndex" value="-1" />
+    <label>
+      Skinin nimi: <input type="text" id="skinName" required />
+    </label>
+    <br />
+    <label>
+      Kulumamalli: 
+      <select id="wearLevel" required>
+        <option value="Factory New">Factory New</option>
+        <option value="Minimal Wear">Minimal Wear</option>
+        <option value="Field Tested">Field Tested</option>
+        <option value="Well Worn">Well Worn</option>
+        <option value="Battle Scarred">Battle Scarred</option>
+      </select>
+    </label>
+    <br />
+    <label>
+      Osto (€/USD): <input type="number" step="0.01" id="buyPrice" required />
+    </label>
+    <br />
+    <label>
+      Myynti (€/USD): <input type="number" step="0.01" id="sellPrice" required />
+    </label>
+    <br />
+    <label>
+      Lähde ostolle: 
+      <select id="buySource" required>
+        <option value="CSFloat">CSFloat</option>
+        <option value="Steam">Steam</option>
+      </select>
+    </label>
+    <br />
+    <label>
+      Lähde myynnille: 
+      <select id="sellSource" required>
+        <option value="CSFloat">CSFloat</option>
+        <option value="Steam">Steam</option>
+      </select>
+    </label>
+    <br /><br />
+    <button type="submit">Tallenna</button>
+    <button type="button" id="cancelEdit">Peruuta</button>
+  </form>
 
-<!-- Suodatus -->
-<div style="margin-top:20px;">
-  <label for="filterWear">Suodata kulumamallin mukaan:</label>
-  <select id="filterWear">
-    <option value="all">Kaikki</option>
-    <option value="Factory New">Factory New</option>
-    <option value="Minimal Wear">Minimal Wear</option>
-    <option value="Field Tested">Field Tested</option>
-    <option value="Well Worn">Well Worn</option>
-    <option value="Battle Scarred">Battle Scarred</option>
-  </select>
+  <h2>Skinien lista</h2>
 
-  <label for="filterProfit">Suodata voiton mukaan:</label>
-  <select id="filterProfit">
-    <option value="all">Kaikki</option>
-    <option value="profit">Vain voitot</option>
-    <option value="loss">Vain tappiot</option>
-  </select>
-</div>
+  <table id="skinsTable">
+    <thead>
+      <tr>
+        <th>Skin</th>
+        <th>Kulumamalli</th>
+        <th>Osto (€)</th>
+        <th>Myynti (€)</th>
+        <th>Voitto (€)</th>
+        <th>Voitto (%)</th>
+        <th>Oston lähde</th>
+        <th>Myynnin lähde</th>
+        <th>Toiminnot</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Skin-rivit tulevat tänne -->
+    </tbody>
+  </table>
 
-<!-- Taulukko -->
-<table id="skinsTable">
-  <thead>
-    <tr>
-      <th>Skinin nimi</th>
-      <th>Kulumamalli</th>
-      <th>Ostohinta (€)</th>
-      <th>Myyntihinta (€)</th>
-      <th>Ero (€)</th>
-      <th>Ero (%)</th>
-      <th>Toiminnot</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- rivit lisätään JavaScriptillä -->
-  </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="4" style="text-align:right;"><strong>Yhteensä:</strong></td>
-      <td id="totalDiffAmount">0.00</td>
-      <td id="totalDiffPercent">0.00 %</td>
-      <td></td>
-    </tr>
-  </tfoot>
-</table>
-
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-  let skins = [];
+  // Korvaa oma Firebase config tähän
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID",
+    measurementId: "YOUR_MEASUREMENT_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const provider = new firebase.auth.GoogleAuthProvider();
 
+  // DOM-elementit
+  const loginBtn = document.getElementById('login-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const userInfo = document.getElementById('user-info');
+  const userNameSpan = document.getElementById('user-name');
   const form = document.getElementById('addSkinForm');
   const tableBody = document.querySelector('#skinsTable tbody');
-  const filterWear = document.getElementById('filterWear');
-  const filterProfit = document.getElementById('filterProfit');
-  const totalDiffAmount = document.getElementById('totalDiffAmount');
-  const totalDiffPercent = document.getElementById('totalDiffPercent');
 
-  function calculateDifference(buy, sell) {
-    const diff = sell - buy;
-    const diffPercent = buy === 0 ? 0 : (diff / buy) * 100;
-    return { diff, diffPercent };
+  // Lomake kentät
+  const skinNameInput = document.getElementById('skinName');
+  const wearLevelInput = document.getElementById('wearLevel');
+  const buyPriceInput = document.getElementById('buyPrice');
+  const sellPriceInput = document.getElementById('sellPrice');
+  const buySourceInput = document.getElementById('buySource');
+  const sellSourceInput = document.getElementById('sellSource');
+  const editIndexInput = document.getElementById('editIndex');
+  const cancelEditBtn = document.getElementById('cancelEdit');
+
+  let skins = [];
+
+  // Päivitä UI kirjautumistilan mukaan
+  function updateUI(user) {
+    if(user) {
+      userInfo.style.display = 'block';
+      loginBtn.style.display = 'none';
+      userNameSpan.textContent = user.displayName || user.email;
+      form.style.display = 'block';
+      renderTable();
+    } else {
+      userInfo.style.display = 'none';
+      loginBtn.style.display = 'inline-block';
+      userNameSpan.textContent = '';
+      form.style.display = 'none';
+      clearTable();
+    }
   }
 
+  // Kirjautumistila kuuntelija
+  auth.onAuthStateChanged(user => {
+    updateUI(user);
+  });
+
+  loginBtn.onclick = () => {
+    auth.signInWithPopup(provider).catch(e => alert("Kirjautumisvirhe: " + e.message));
+  };
+
+  logoutBtn.onclick = () => {
+    auth.signOut();
+  };
+
+  // Laskee erotukset ja prosentit
+  function calculateProfit(buy, sell) {
+    const profit = sell - buy;
+    const profitPercent = buy > 0 ? (profit / buy) * 100 : 0;
+    return { profit, profitPercent };
+  }
+
+  // Päivittää taulukon näkyväksi
   function renderTable() {
-    tableBody.innerHTML = '';
-
-    // Suodatetaan
-    let filteredSkins = skins.filter(skin => {
-      if(filterWear.value !== 'all' && skin.wear !== filterWear.value) return false;
-      if(filterProfit.value === 'profit' && skin.diff <= 0) return false;
-      if(filterProfit.value === 'loss' && skin.diff >= 0) return false;
-      return true;
-    });
-
-    // Lasketaan summat
-    let totalDiff = 0;
-    let totalBuy = 0;
-    filteredSkins.forEach(skin => {
-      totalDiff += skin.diff;
-      totalBuy += skin.buyPrice;
-    });
-
-    // Lisätään rivit taulukkoon
-    filteredSkins.forEach((skin, index) => {
+    clearTable();
+    skins.forEach((skin, i) => {
       const tr = document.createElement('tr');
-      tr.className = skin.diff > 0 ? 'profit' : 'loss';
+
+      const { profit, profitPercent } = calculateProfit(skin.buyPrice, skin.sellPrice);
 
       tr.innerHTML = `
         <td>${skin.name}</td>
-        <td>${skin.wear}</td>
+        <td>${skin.wearLevel}</td>
         <td>${skin.buyPrice.toFixed(2)}</td>
         <td>${skin.sellPrice.toFixed(2)}</td>
-        <td>${skin.diff.toFixed(2)}</td>
-        <td>${skin.diffPercent.toFixed(2)}%</td>
+        <td class="${profit >= 0 ? 'profit' : 'loss'}">${profit.toFixed(2)}</td>
+        <td class="${profit >= 0 ? 'profit' : 'loss'}">${profitPercent.toFixed(2)}%</td>
+        <td>${skin.buySource}</td>
+        <td>${skin.sellSource}</td>
         <td>
-          <button onclick="editSkin(${index})">Muokkaa</button>
-          <button onclick="deleteSkin(${index})">Poista</button>
+          <button onclick="editSkin(${i})">Muokkaa</button>
+          <button onclick="deleteSkin(${i})">Poista</button>
         </td>
       `;
-
       tableBody.appendChild(tr);
     });
-
-    // Päivitä footer summat
-    totalDiffAmount.textContent = totalDiff.toFixed(2);
-    const totalDiffPercentCalc = totalBuy === 0 ? 0 : (totalDiff / totalBuy) * 100;
-    totalDiffPercent.textContent = totalDiffPercentCalc.toFixed(2) + ' %';
   }
 
-  form.addEventListener('submit', e => {
+  function clearTable() {
+    tableBody.innerHTML = '';
+  }
+
+  // Lisää tai päivitä skin taulukkoon
+  form.onsubmit = (e) => {
     e.preventDefault();
+    const name = skinNameInput.value.trim();
+    const wearLevel = wearLevelInput.value;
+    const buyPrice = parseFloat(buyPriceInput.value);
+    const sellPrice = parseFloat(sellPriceInput.value);
+    const buySource = buySourceInput.value;
+    const sellSource = sellSourceInput.value;
+    const editIndex = parseInt(editIndexInput.value);
 
-    const name = document.getElementById('skinName').value.trim();
-    const wear = document.getElementById('wearCondition').value;
-    const buyPrice = parseFloat(document.getElementById('buyPrice').value);
-    const sellPrice = parseFloat(document.getElementById('sellPrice').value);
+    if(!name || isNaN(buyPrice) || isNaN(sellPrice)) {
+      alert("Täytä kaikki kentät oikein!");
+      return;
+    }
 
-    if (!name || isNaN(buyPrice) || isNaN(sellPrice)) return;
+    const skinObj = { name, wearLevel, buyPrice, sellPrice, buySource, sellSource };
 
-    const { diff, diffPercent } = calculateDifference(buyPrice, sellPrice);
+    if(editIndex >= 0) {
+      skins[editIndex] = skinObj;
+    } else {
+      skins.push(skinObj);
+    }
 
-    skins.push({ name, wear, buyPrice, sellPrice, diff, diffPercent });
-
-    form.reset();
-    renderTable();
-  });
-
-  window.editSkin = function(index) {
-    const skin = skins[index];
-    document.getElementById('skinName').value = skin.name;
-    document.getElementById('wearCondition').value = skin.wear;
-    document.getElementById('buyPrice').value = skin.buyPrice;
-    document.getElementById('sellPrice').value = skin.sellPrice;
-
-    // Poistetaan vanha rivi ennen uuden lisäämistä, koska muokataan
-    skins.splice(index, 1);
+    clearForm();
     renderTable();
   };
 
-  window.deleteSkin = function(index) {
-    if(confirm('Haluatko varmasti poistaa tämän skinin?')) {
-      skins.splice(index, 1);
+  // Tyhjennä lomake ja nollaa muokkausindeksi
+  function clearForm() {
+    skinNameInput.value = '';
+    wearLevelInput.value = 'Factory New';
+    buyPriceInput.value = '';
+    sellPriceInput.value = '';
+    buySourceInput.value = 'CSFloat';
+    sellSourceInput.value = 'CSFloat';
+    editIndexInput.value = -1;
+  }
+
+  // Peruuta muokkaus
+  cancelEditBtn.onclick = () => {
+    clearForm();
+  };
+
+  // Muokkaa skin tietoja
+  window.editSkin = function(i) {
+    const skin = skins[i];
+    skinNameInput.value = skin.name;
+    wearLevelInput.value = skin.wearLevel;
+    buyPriceInput.value = skin.buyPrice;
+    sellPriceInput.value = skin.sellPrice;
+    buySourceInput.value = skin.buySource;
+    sellSourceInput.value = skin.sellSource;
+    editIndexInput.value = i;
+  };
+
+  // Poista skin
+  window.deleteSkin = function(i) {
+    if(confirm("Haluatko varmasti poistaa tämän skinin?")) {
+      skins.splice(i, 1);
       renderTable();
     }
   };
-
-  filterWear.addEventListener('change', renderTable);
-  filterProfit.addEventListener('change', renderTable);
-
-  renderTable();
 </script>
 
 </body>
