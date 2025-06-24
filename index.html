@@ -72,7 +72,14 @@
     <button type="submit">Tallenna</button>
     <button type="button" id="cancelEdit">Peruuta</button>
   </form>
-
+<div id="stats" style="display:none; margin-bottom: 20px;">
+  <h2>Tilastot</h2>
+  <p><strong>Skinien määrä:</strong> <span id="totalCount">0</span></p>
+  <p><strong>Yhteensä voittoa:</strong> <span id="totalProfit">0.00</span> €</p>
+  <p><strong>Keskimääräinen voitto:</strong> <span id="averageProfit">0.00</span> €</p>
+  <p><strong>Keskimääräinen voitto-%:</strong> <span id="averageProfitPercent">0.00</span> %</p>
+</div>
+	
   <h2>Skinien lista</h2>
 
   <!-- Hakukenttä -->
@@ -261,9 +268,36 @@
       `;
       tableBody.appendChild(tr);
     });
+updateStats(skinsToShow);
 
     updateSortIcons();
+
   }
+function updateStats(data) {
+  if (!data || data.length === 0) {
+    document.getElementById('stats').style.display = 'none';
+    return;
+  }
+
+  let totalProfit = 0;
+  let totalProfitPercent = 0;
+
+  data.forEach(skin => {
+    const { profit, profitPercent } = calculateProfit(skin.buyPrice, skin.sellPrice);
+    totalProfit += profit;
+    totalProfitPercent += profitPercent;
+  });
+
+  const count = data.length;
+  const avgProfit = totalProfit / count;
+  const avgProfitPercent = totalProfitPercent / count;
+
+  document.getElementById('totalCount').textContent = count;
+  document.getElementById('totalProfit').textContent = totalProfit.toFixed(2);
+  document.getElementById('averageProfit').textContent = avgProfit.toFixed(2);
+  document.getElementById('averageProfitPercent').textContent = avgProfitPercent.toFixed(2);
+  document.getElementById('stats').style.display = 'block';
+}
 
   // Tyhjennä taulukon body
   function clearTable() {
