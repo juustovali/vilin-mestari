@@ -22,7 +22,6 @@
       color: #0d47a1;
     }
 
-    /* Buttonit */
     button {
       cursor: pointer;
       padding: 0.4rem 1rem;
@@ -51,7 +50,6 @@
       background-color: #155ab6;
     }
 
-    /* Lomake */
     form > div {
       margin-bottom: 1rem;
     }
@@ -69,7 +67,6 @@
       border-radius: 4px;
     }
 
-    /* Taulukko */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -87,35 +84,31 @@
       background-color: #333;
     }
 
-    /* Teeman valintapainikkeet */
     #themeButtons button {
       margin-right: 0.5rem;
     }
 
     #userInfo {
-      margin-top: 1rem;
       margin-bottom: 1rem;
-      font-weight: bold;
     }
 
+    #loginBtn, #logoutBtn {
+      margin-bottom: 1rem;
+    }
   </style>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body data-theme="light">
 
   <h1>Vilin Mestari Sijoitus Voitot</h1>
 
-  <div id="themeButtons">
+  <div id="userInfo"></div>
+  <button id="loginBtn">Kirjaudu sisään Googlella</button>
+  <button id="logoutBtn" style="display:none;">Kirjaudu ulos</button>
+
+  <div id="themeButtons" style="margin-bottom: 1rem;">
     <button id="lightBtn">Vaalea</button>
     <button id="darkBtn">Tumma</button>
     <button id="blueBtn">Sininen</button>
-  </div>
-
-  <div id="userInfo">
-    Ei kirjautunut <button id="loginBtn">Kirjaudu Googlella</button>
   </div>
 
   <form id="addSkinForm" aria-label="Lisää uusi skin" style="display:none;">
@@ -147,11 +140,12 @@
       <select id="purchaseSource" name="purchaseSource" required>
         <option value="">Valitse...</option>
         <option value="Steam">Steam</option>
-        <option value="CSFloat">CSFloat</option>
       </select>
     </div>
     <button type="submit" id="addSkinBtn">Lisää skin</button>
   </form>
+
+  <button id="fetchTradesBtn" style="display:none; margin-top:1rem;">Hae Steam-ostot automaattisesti</button>
 
   <table id="skinsTable" aria-label="Skinit taulukko" style="display:none;">
     <thead>
@@ -166,12 +160,15 @@
       </tr>
     </thead>
     <tbody>
-      <!-- Skinit renderöidään tänne -->
     </tbody>
   </table>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <script>
-    // === Firebase-konfiguraatio (vaihda omiin arvoihisi) ===
+    // --- Firebase konfiguraatio: korvaa omillasi ---
     const firebaseConfig = {
       apiKey: "AIzaSyDj3YnvlbQPM5yvlYTEohrup65bQCBbwDY",
   authDomain: "vilin-mestari-sijoitus-voitot.firebaseapp.com",
@@ -182,118 +179,80 @@
   measurementId: "G-5683KL29W1"
     };
 
-    // Firebase alustaminen
+    // --- Init ---
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // DOM-elementit
-    const userInfo = document.getElementById('userInfo');
+    // Käyttäjän Steam64 ID, jolla suodatetaan kaupat
+    const MY_STEAM_ID = '76561198955958359';
+
     const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userInfo = document.getElementById('userInfo');
     const addSkinForm = document.getElementById('addSkinForm');
     const skinsTable = document.getElementById('skinsTable');
     const skinsTableBody = skinsTable.querySelector('tbody');
+    const fetchTradesBtn = document.getElementById('fetchTradesBtn');
 
     let skins = [];
     let editIndex = -1;
     let currentUser = null;
 
-    // Teemapainikkeet
-    const lightBtn = document.getElementById('lightBtn');
-    const darkBtn = document.getElementById('darkBtn');
-    const blueBtn = document.getElementById('blueBtn');
-
+    // Teemat
+    document.getElementById('lightBtn').addEventListener('click', () => setTheme('light'));
+    document.getElementById('darkBtn').addEventListener('click', () => setTheme('dark'));
+    document.getElementById('blueBtn').addEventListener('click', () => setTheme('blue'));
     function setTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
     }
 
-    lightBtn.addEventListener('click', () => setTheme('light'));
-    darkBtn.addEventListener('click', () => setTheme('dark'));
-    blueBtn.addEventListener('click', () => setTheme('blue'));
-
-    // Kirjautuminen Googlella
+    // Kirjautuminen
     loginBtn.addEventListener('click', () => {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(e => alert("Kirjautumisvirhe: " + e.message));
+      auth.signInWithPopup(provider);
     });
 
-    // Kuuntele kirjautumistilaa
-    auth.onAuthStateChanged(async (user) => {
-      currentUser = user;
-      if (user) {
-        userInfo.innerHTML = `Kirjautunut: <span>${user.displayName}</span> <button id="logoutBtn">Kirjaudu ulos</button>`;
-        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut();
+    });
+
+    // Kuuntele kirjautumisen tilaa
+    auth.onAuthStateChanged(user => {
+      if(user) {
+        currentUser = user;
+        userInfo.textContent = `Tervetuloa, ${user.displayName}`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
         addSkinForm.style.display = 'block';
         skinsTable.style.display = 'table';
-        loginBtn.style.display = 'none';
-        await loadSkins();
-        renderSkins();
+        fetchTradesBtn.style.display = 'inline-block';
+        loadSkins();
       } else {
-        userInfo.innerHTML = `Ei kirjautunut`;
+        currentUser = null;
+        userInfo.textContent = '';
         loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
         addSkinForm.style.display = 'none';
         skinsTable.style.display = 'none';
+        fetchTradesBtn.style.display = 'none';
+        skinsTableBody.innerHTML = '';
         skins = [];
-        renderSkins();
       }
     });
 
-    // Lataa skinit Firestoresta
-    async function loadSkins() {
-      if (!currentUser) return;
-      try {
-        const docRef = db.collection('users').doc(currentUser.uid);
-        const doc = await docRef.get();
-        if (doc.exists) {
-          skins = doc.data().skins || [];
-        } else {
+    // Lataa skinit Firestoresta käyttäjäkohtaisesti
+    function loadSkins() {
+      db.collection('skins')
+        .where('userId', '==', currentUser.uid)
+        .onSnapshot(snapshot => {
           skins = [];
-        }
-      } catch (e) {
-        alert("Virhe skinien latauksessa: " + e.message);
-      }
+          snapshot.forEach(doc => {
+            skins.push({ id: doc.id, ...doc.data() });
+          });
+          renderSkins();
+        });
     }
-
-    // Tallenna skinit Firestoreen
-    async function saveSkins() {
-      if (!currentUser) return;
-      try {
-        const docRef = db.collection('users').doc(currentUser.uid);
-        await docRef.set({ skins });
-      } catch (e) {
-        alert("Virhe skinien tallennuksessa: " + e.message);
-      }
-    }
-
-    // Lomakkeen käsittely
-    addSkinForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const name = addSkinForm.name.value.trim();
-      const buyPrice = parseFloat(addSkinForm.buyPrice.value);
-      const sellPrice = parseFloat(addSkinForm.sellPrice.value);
-      const condition = addSkinForm.condition.value;
-      const purchaseSource = addSkinForm.purchaseSource.value;
-
-      if (!name || isNaN(buyPrice) || isNaN(sellPrice) || !condition || !purchaseSource) {
-        alert('Täytä kaikki kentät oikein.');
-        return;
-      }
-
-      const newSkin = { name, buyPrice, sellPrice, condition, purchaseSource };
-
-      if (editIndex === -1) {
-        skins.push(newSkin);
-      } else {
-        skins[editIndex] = newSkin;
-        editIndex = -1;
-        addSkinForm.querySelector('button[type="submit"]').textContent = 'Lisää skin';
-      }
-
-      addSkinForm.reset();
-      await saveSkins();
-      renderSkins();
-    });
 
     // Renderöi skin-taulukko
     function renderSkins() {
@@ -315,9 +274,9 @@
         skinsTableBody.appendChild(tr);
       });
 
-      // Lisää event listenerit muokkaus- ja poistonapeille
+      // Muokkaus
       document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.onclick = e => {
           const i = parseInt(e.target.dataset.index);
           editIndex = i;
           const skin = skins[i];
@@ -327,25 +286,103 @@
           addSkinForm.condition.value = skin.condition;
           addSkinForm.purchaseSource.value = skin.purchaseSource;
           addSkinForm.querySelector('button[type="submit"]').textContent = 'Tallenna muutokset';
-        });
+        };
       });
 
-      document.querySelectorAll('.delete-btn').forEach(async btn => {
-        btn.addEventListener('click', async (e) => {
+      // Poisto
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = e => {
           const i = parseInt(e.target.dataset.index);
-          if (confirm(`Haluatko varmasti poistaa skinin "${skins[i].name}"?`)) {
-            skins.splice(i, 1);
-            if (editIndex === i) {
+          if(confirm(`Haluatko varmasti poistaa skinin "${skins[i].name}"?`)) {
+            db.collection('skins').doc(skins[i].id).delete();
+            if(editIndex === i) {
               editIndex = -1;
               addSkinForm.reset();
               addSkinForm.querySelector('button[type="submit"]').textContent = 'Lisää skin';
             }
-            await saveSkins();
-            renderSkins();
           }
-        });
+        };
       });
     }
+
+    // Lomakkeen lähetys (lisää tai muokkaa)
+    addSkinForm.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const name = addSkinForm.name.value.trim();
+      const buyPrice = parseFloat(addSkinForm.buyPrice.value);
+      const sellPrice = parseFloat(addSkinForm.sellPrice.value);
+      const condition = addSkinForm.condition.value;
+      const purchaseSource = addSkinForm.purchaseSource.value;
+
+      if(!name || isNaN(buyPrice) || isNaN(sellPrice) || !condition || !purchaseSource) {
+        alert('Täytä kaikki kentät oikein.');
+        return;
+      }
+
+      const skinData = {
+        name, buyPrice, sellPrice, condition, purchaseSource,
+        userId: currentUser.uid
+      };
+
+      if(editIndex === -1) {
+        db.collection('skins').add(skinData);
+      } else {
+        const skinId = skins[editIndex].id;
+        db.collection('skins').doc(skinId).update(skinData);
+        editIndex = -1;
+        addSkinForm.querySelector('button[type="submit"]').textContent = 'Lisää skin';
+      }
+
+      addSkinForm.reset();
+    });
+
+    // Hae simuloidut Steam-ostot ja lisää Firestoreen (vain MY_STEAM_ID:n kaupat)
+    fetchTradesBtn.addEventListener('click', async () => {
+      fetchTradesBtn.disabled = true;
+      fetchTradesBtn.textContent = 'Haetaan kauppoja...';
+
+      try {
+        // Simuloitu kauppadata
+        const simulatedTrades = [
+          { name: 'AWP | Dragon Lore', buyPrice: 1200, sellPrice: 1350, condition: 'Factory New', purchaseSource: 'Steam', steamIdBuyer: '76561198955958359' },
+          { name: 'AK-47 | Redline', buyPrice: 12.50, sellPrice: 20, condition: 'Field-Tested', purchaseSource: 'Steam', steamIdBuyer: '76561198955958359' },
+          { name: 'M4A1-S | Hyper Beast', buyPrice: 18, sellPrice: 25, condition: 'Minimal Wear', purchaseSource: 'Steam', steamIdBuyer: '76561198955958359' },
+          { name: 'Desert Eagle | Blaze', buyPrice: 50, sellPrice: 65, condition: 'Well-Worn', purchaseSource: 'Steam', steamIdBuyer: '76561100000000000' }, // EI lisätä, eri steamId
+        ];
+
+        // Suodata vain sinun Steam ID:n ostot
+        const myTrades = simulatedTrades.filter(trade => trade.steamIdBuyer === MY_STEAM_ID);
+
+        // Lisää ne Firestoreen, jos niitä ei jo ole (yksinkertaisuuden vuoksi lisätään aina)
+        for(const trade of myTrades) {
+          // Tarkista onko jo olemassa sama nimi ja ostohinta (voit halutessasi tehdä monimutkaisemman tarkistuksen)
+          const querySnapshot = await db.collection('skins')
+            .where('userId', '==', currentUser.uid)
+            .where('name', '==', trade.name)
+            .where('buyPrice', '==', trade.buyPrice)
+            .get();
+
+          if(querySnapshot.empty) {
+            await db.collection('skins').add({
+              name: trade.name,
+              buyPrice: trade.buyPrice,
+              sellPrice: trade.sellPrice,
+              condition: trade.condition,
+              purchaseSource: trade.purchaseSource,
+              userId: currentUser.uid
+            });
+          }
+        }
+
+        alert('Steam-ostot lisätty onnistuneesti!');
+      } catch(e) {
+        alert('Virhe haettaessa kauppoja: ' + e.message);
+      } finally {
+        fetchTradesBtn.disabled = false;
+        fetchTradesBtn.textContent = 'Hae Steam-ostot automaattisesti';
+      }
+    });
 
   </script>
 </body>
