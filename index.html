@@ -682,6 +682,132 @@ table#skinsTable tbody td {
         renderTable();
       });
     });
+ // Lataa skinit Firestoresta
+  async function loadSkins() {
+    showLoader(true);
+    try {
+      const snapshot = await db.collection('users').doc(currentUser.uid).collection('skins').get();
+      skins = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderTable();
+    } catch (error) {
+      alert('Virhe ladattaessa skinejä: ' + error.message);
+    }
+    showLoader(false);
+  }
+
+  // Tallenna tai päivitä skin
+  addSkinForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = skinNameInput.value.trim();
+    const buy = parseFloat(buyPriceInput.value);
+    const sell = parseFloat(sellPriceInput.value);
+    const tax = parseFloat(taxPercentInput.value);
+    const profit = (sell * (1 - tax / 100)) - buy;
+
+    const data = { name, buy, sell, tax, profit };
+
+    try {
+      if (editIndexInput.value === "-1") {
+        // Uusi skin
+        const docRef = await db.collection('users').doc(currentUser.uid).collection('skins').add(data);
+        skins.push({ id: docRef.id, ...data });
+      } else {
+        // Muokataan olemassa olevaa
+        const index = parseInt(editIndexInput.value);
+        const id = skins[index].id;
+        await db.collection('users').doc(currentUser.uid).collection('skins').doc(id).set(data);
+        skins[index] = { id, ...data };
+      }
+      renderTable();
+      addSkinForm.reset();
+      editIndexInput.value = -1;
+      cancelEditBtn.style.display = 'none';
+    } catch (error) {
+      alert('Tallennusvirhe: ' + error.message);
+    }
+  });
+
+  // Peruuta muokkaus
+  cancelEditBtn.addEventListener('click', () => {
+    addSkinForm.reset();
+    editIndexInput.value = -1;
+    cancelEditBtn.style.display = 'none';
+  });
+
+  // Poista skin
+  async function deleteSkin(index) {
+    const id = skins[index].id;
+    try {
+      await db.collection('users').doc(currentUser.uid).collection('skins').doc(id).delete();
+      skins.splice(index, 1);
+      renderTable();
+    } catch (error) {
+      alert('Virhe poistettaessa: ' + error.message);
+    }
+  }
+
+  // Muokkaa skin
+  function editSkin(index) {
+    const skin = skins[index];
+    skinNameInput.value = skin.name;
+    buyPriceInput.value = skin.buy;
+    sellPriceInput.value = skin.sell;
+    taxPercentInput.value = skin.tax;
+    editIndexInput.value = index;
+    cancelEditBtn.style.display = 'inline-block';
+  }
+
+  // Taulukon renderöinti ja lajittelu
+  function renderTable() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    let filtered = skins.filter(s => s.name.toLowerCase().includes(searchTerm));
+
+    filtered.sort((a, b) => {
+      const { key, direction } = sortConfig;
+      const valA = a[key];
+      const valB = b[key];
+      return direction === 'asc' ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+    });
+
+    skinsTableBody.innerHTML = '';
+    filtered.forEach((skin, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${skin.name}</td>
+        <td>${skin.buy.toFixed(2)}</td>
+        <td>${skin.sell.toFixed(2)}</td>
+        <td>${skin.profit.toFixed(2)}</td>
+        <td>
+          <button class="edit-btn" onclick="editSkin(${index})">Muokkaa</button>
+          <button class="delete-btn" onclick="deleteSkin(${index})">Poista</button>
+        </td>
+      `;
+      skinsTableBody.appendChild(row);
+    });
+
+    totalSkinsSpan.textContent = filtered.length;
+    const totalProfit = filtered.reduce((sum, s) => sum + s.profit, 0);
+    totalProfitSpan.textContent = totalProfit.toFixed(2);
+  }
+
+  // Lajittelun käsittelijät
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.getAttribute('data-sort');
+      if (sortConfig.key === key) {
+        sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortConfig.key = key;
+        sortConfig.direction = 'asc';
+      }
+      document.querySelectorAll('th[data-sort]').forEach(t => t.classList.remove('sort-asc', 'sort-desc'));
+      th.classList.add(sortConfig.direction === 'asc' ? 'sort-asc' : 'sort-desc');
+      renderTable();
+    });
+  });
+
+  // Haku
+  searchInput.addEventListener('input', renderTable);
 
   </script>
 </body>
