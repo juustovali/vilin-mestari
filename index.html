@@ -5,395 +5,343 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Vilin Mestari Sijoitus Voitot</title>
   <style>
-   /* Arvokas, asiallinen tumma teema */
+    /* Perusasetukset */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f7fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #121214; /* hyvin tumma, lähes musta */
-  margin: 0;
-  padding: 24px 20px;
-  color: #e0d9cc; /* pehmeä kerma */
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: background-color 0.5s ease;
-}
+    h1, h2 {
+      font-weight: 700;
+      color: #2c3e50;
+    }
 
-h1, h2 {
-  font-weight: 700;
-  color: #c9a66b; /* kultaan vivahtava */
-  text-shadow: 0 2px 4px rgba(201, 166, 107, 0.6);
-  letter-spacing: 1px;
-}
+    /* Container */
+    .container {
+      max-width: 960px;
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 30px 40px;
+      box-sizing: border-box;
+    }
 
-.container {
-  max-width: 960px;
-  width: 100%;
-  background: linear-gradient(145deg, #1d1d1f, #121214);
-  box-shadow: 0 6px 16px rgba(201, 166, 107, 0.4);
-  border-radius: 12px;
-  padding: 40px 48px;
-  box-sizing: border-box;
-  transition: box-shadow 0.3s ease;
-}
+    /* Käyttäjätiedot ja nappulat */
+    #user-info {
+      margin-bottom: 25px;
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #e8f0fe;
+      padding: 10px 20px;
+      border-radius: 6px;
+      box-shadow: inset 0 0 8px #bbd2ff;
+    }
 
-.container:hover {
-  box-shadow: 0 8px 24px rgba(201, 166, 107, 0.55);
-}
+    #user-info span {
+      font-weight: 600;
+      color: #1a73e8;
+    }
 
-#user-info {
-  margin-bottom: 28px;
-  font-size: 1.15rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #292922; /* tumma oliivi/harmaa */
-  padding: 16px 28px;
-  border-radius: 10px;
-  box-shadow: inset 0 0 12px #c9a66baa;
-  user-select: none;
-  transition: background-color 0.4s ease;
-}
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      box-shadow: 0 2px 6px rgba(26,115,232,0.4);
+    }
+    button:hover {
+      background-color: #155ab6;
+    }
+    button:disabled {
+      background-color: #a3bffa;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
 
-#user-info:hover {
-  background-color: #3a3a30;
-}
+    /* Lomake */
+    form#addSkinForm {
+      margin-bottom: 30px;
+      background: #fafafa;
+      border: 1px solid #d6d9dc;
+      padding: 25px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    form#addSkinForm h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+      color: #34495e;
+    }
 
-#user-info span {
-  font-weight: 700;
-  color: #c9a66b;
-  text-shadow: 0 1px 2px #856f38;
-}
+    form#addSkinForm label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    form#addSkinForm input[type="text"],
+    form#addSkinForm input[type="number"],
+    form#addSkinForm select {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 1rem;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    form#addSkinForm input[type="text"]:focus,
+    form#addSkinForm input[type="number"]:focus,
+    form#addSkinForm select:focus {
+      border-color: #1a73e8;
+      outline: none;
+      box-shadow: 0 0 6px #aecbfa;
+    }
 
-button {
-  background: linear-gradient(145deg, #b18a3b, #9d7c2d);
-  color: #f4eddc;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background 0.35s ease, box-shadow 0.35s ease;
-  user-select: none;
-  box-shadow: 0 4px 10px rgba(177, 138, 59, 0.7);
-  font-weight: 700;
-  letter-spacing: 0.7px;
-}
-button:hover {
-  background: linear-gradient(145deg, #c4aa51, #b3963b);
-  box-shadow: 0 6px 16px rgba(196, 170, 81, 0.9);
-}
-button:disabled {
-  background: #d1caa8;
-  cursor: not-allowed;
-  box-shadow: none;
-  color: #6e5f37;
-}
+    /* Lomake napit rinnakkain */
+    form#addSkinForm .buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    form#addSkinForm .buttons button {
+      flex: 1;
+    }
 
-form#addSkinForm {
-  margin-bottom: 40px;
-  background: linear-gradient(160deg, #2a2a26, #1b1b19);
-  border-radius: 14px;
-  padding: 36px 36px;
-  box-shadow: 0 6px 18px rgba(201, 166, 107, 0.15);
-  transition: box-shadow 0.4s ease;
-}
-form#addSkinForm:hover {
-  box-shadow: 0 8px 26px rgba(201, 166, 107, 0.3);
-}
+    /* Tilastot */
+    #stats {
+      margin-bottom: 30px;
+      background: #e3f2fd;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: inset 0 0 8px #90caf9;
+      color: #0d47a1;
+    }
+    #stats p {
+      font-size: 1.1rem;
+      margin: 8px 0;
+      font-weight: 600;
+    }
 
-form#addSkinForm h2 {
-  margin-top: 0;
-  margin-bottom: 22px;
-  font-size: 1.5rem;
-  color: #c9a66b;
-  text-shadow: 0 1px 3px #856f38;
-  letter-spacing: 1px;
-}
+    /* Haku */
+    #searchInput {
+      padding: 10px 15px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 20px;
+      transition: border-color 0.3s ease;
+    }
+    #searchInput:focus {
+      border-color: #1a73e8;
+      outline: none;
+      box-shadow: 0 0 8px #aecbfa;
+    }
 
-form#addSkinForm label {
-  display: block;
-  margin-bottom: 14px;
-  font-weight: 600;
-  color: #d6cdbb;
-  letter-spacing: 0.4px;
-}
+    /* Taulukko */
+    table#skinsTable {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    table#skinsTable thead {
+      background-color: #1a73e8;
+      color: white;
+      user-select: none;
+    }
+    table#skinsTable th, table#skinsTable td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+    table#skinsTable th {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      position: relative;
+      user-select: none;
+    }
+    /* Lajittelun nuolet */
+    th.sort-asc::after,
+    th.sort-desc::after {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 6px solid transparent;
+    }
+    th.sort-asc::after {
+      border-bottom-color: white;
+    }
+    th.sort-desc::after {
+      border-top-color: white;
+    }
 
-form#addSkinForm input[type="text"],
-form#addSkinForm input[type="number"],
-form#addSkinForm select {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 14px;
-  box-sizing: border-box;
-  background: #232320;
-  color: #dcd6c8;
-  box-shadow: inset 0 0 8px #4a4635;
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
-}
-form#addSkinForm input[type="text"]:focus,
-form#addSkinForm input[type="number"]:focus,
-form#addSkinForm select:focus {
-  box-shadow: 0 0 12px #c9a66baa;
-  outline: none;
-  background: #2e2c26;
-}
+    /* Taulukon rivien hover */
+    table#skinsTable tbody tr:hover {
+      background-color: #f0f7ff;
+    }
 
-form#addSkinForm .buttons {
-  margin-top: 28px;
-  display: flex;
-  gap: 20px;
-}
-form#addSkinForm .buttons button {
-  flex: 1;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  user-select: none;
-  transition: transform 0.25s ease;
-}
-form#addSkinForm .buttons button:hover:not(:disabled) {
-  transform: scale(1.05);
-}
+    /* Voitto/tappio värit */
+    .profit {
+      background-color: #d4f8d4;
+      color: #2e7d32;
+      font-weight: 600;
+    }
+    .loss {
+      background-color: #f8d4d4;
+      color: #b71c1c;
+      font-weight: 600;
+    }
 
-/* Tilastot */
-#stats {
-  margin-bottom: 40px;
-  background: #3e3c35;
-  padding: 26px 38px;
-  border-radius: 14px;
-  box-shadow: inset 0 0 14px #c9a66baa;
-  color: #dbcfa9;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: background-color 0.3s ease;
-}
-#stats p {
-  font-size: 1.15rem;
-  margin: 10px 0;
-}
+    /* Toimintopainikkeet */
+    table#skinsTable button {
+      background-color: #2980b9;
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      margin: 0 4px;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(41, 128, 185, 0.6);
+    }
+    table#skinsTable button:hover {
+      background-color: #1c5980;
+    }
 
-/* Haku */
-#searchInput {
-  padding: 14px 20px;
-  font-size: 1.1rem;
-  border-radius: 14px;
-  border: none;
-  width: 100%;
-  max-width: 320px;
-  margin-bottom: 28px;
-  background: #292820;
-  color: #ddd6bb;
-  box-shadow: inset 0 0 10px #4a4635;
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
-}
-#searchInput:focus {
-  box-shadow: 0 0 14px #c9a66baa;
-  outline: none;
-  background: #3c3a30;
-}
-
-/* Taulukko */
-table#skinsTable {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 8px;
-  box-shadow: 0 5px 18px rgba(201, 166, 107, 0.4);
-  border-radius: 14px;
-  overflow: hidden;
-  background: #2a2a27;
-  color: #d4cda6;
-  transition: box-shadow 0.4s ease;
-}
-table#skinsTable:hover {
-  box-shadow: 0 7px 26px rgba(201, 166, 107, 0.55);
-}
-
-table#skinsTable thead tr {
-  background-color: #b3974f;
-  color: #2a2a27;
-  user-select: none;
-  border-radius: 14px 14px 0 0;
-  box-shadow: 0 3px 14px #b3974faa;
-}
-table#skinsTable thead th {
-  padding: 14px 20px;
-  font-weight: 700;
-  font-size: 1.05rem;
-  cursor: pointer;
-  position: relative;
-  user-select: none;
-  border: none;
-}
-/* Lajittelun nuolet */
-th.sort-asc::after,
-th.sort-desc::after {
-  content: '';
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 7px solid transparent;
-}
-th.sort-asc::after {
-  border-bottom-color: #2a2a27;
-}
-th.sort-desc::after {
-  border-top-color: #2a2a27;
-}
-
-table#skinsTable tbody tr {
-  background-color: #393a2d;
-  box-shadow: inset 0 0 10px #4a4635;
-  transition: background-color 0.3s ease;
-}
-table#skinsTable tbody tr:hover {
-  background-color: #474832;
-  box-shadow: inset 0 0 14px #c9a66baa;
-}
-
-table#skinsTable tbody td {
-  padding: 14px 18px;
-  text-align: center;
-  font-weight: 600;
-  user-select: none;
-  border: none;
-}
-
-.delete-btn {
-  background: #a33b3b;
-  box-shadow: 0 2px 8px #7a2c2c;
-  padding: 8px 14px;
-  font-weight: 700;
-  border-radius: 14px;
-  color: #f2dede;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-.delete-btn:hover {
-  background: #cf5151;
-  box-shadow: 0 3px 12px #9e3d3d;
-}
-
-.edit-btn {
-  background: #4a7a3a;
-  box-shadow: 0 2px 8px #3b632a;
-  padding: 8px 14px;
-  font-weight: 700;
-  border-radius: 14px;
-  color: #d8f0d0;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-.edit-btn:hover {
-  background: #68a851;
-  box-shadow: 0 3px 12px #527c3b;
-}
-
-/* Loader */
-#loader {
-  border: 5px solid #c9a66b33;
-  border-top: 5px solid #c9a66b;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  animation: spin 1s linear infinite;
-  margin: 24px auto;
-  display: none;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg);}
-  100% { transform: rotate(360deg);}
-}
-
-/* Responsiivisuus */
-@media (max-width: 640px) {
-  .container {
-    padding: 24px 18px;
-  }
-  form#addSkinForm .buttons {
-    flex-direction: column;
-  }
-  form#addSkinForm .buttons button {
-    width: 100%;
-  }
-  #user-info {
-    flex-direction: column;
-    gap: 12px;
-  }
-  table#skinsTable thead th, table#skinsTable tbody td {
-    font-size: 0.85rem;
-    padding: 10px 8px;
-  }
-}
-
+    /* Responsiivisuus */
+    @media (max-width: 720px) {
+      .container {
+        padding: 20px;
+      }
+      table#skinsTable th, table#skinsTable td {
+        padding: 8px 6px;
+        font-size: 0.85rem;
+      }
+      #searchInput {
+        max-width: 100%;
+      }
+      form#addSkinForm label {
+        font-size: 0.95rem;
+      }
+      form#addSkinForm input[type="text"],
+      form#addSkinForm input[type="number"],
+      form#addSkinForm select {
+        font-size: 0.9rem;
+      }
+    }
   </style>
 </head>
 <body>
+
   <div class="container">
+
     <h1>Vilin Mestari Sijoitus Voitot</h1>
 
     <div id="user-info" style="display:none;">
-      <span id="user-email"></span>
-      <button id="signOutBtn">Kirjaudu ulos</button>
+      Tervetuloa, <span id="user-name"></span>!
+      <button id="logout-btn">Kirjaudu ulos</button>
     </div>
-    <button id="signInBtn">Kirjaudu Googlella</button>
-
-    <div id="loader"></div>
+    <button id="login-btn">Kirjaudu Googlella</button>
 
     <form id="addSkinForm" style="display:none;">
       <h2>Lisää tai muokkaa skin</h2>
       <input type="hidden" id="editIndex" value="-1" />
-      <label for="skinName">Skinin nimi:</label>
-      <input type="text" id="skinName" required />
+      <label>
+        Skinin nimi:
+        <input type="text" id="skinName" required autocomplete="off" />
+      </label>
 
-      <label for="buyPrice">Ostohinta (€):</label>
-      <input type="number" id="buyPrice" step="0.01" min="0" required />
+      <label>
+        Kulumamalli:
+        <select id="wearLevel" required>
+          <option value="Factory New">Factory New</option>
+          <option value="Minimal Wear">Minimal Wear</option>
+          <option value="Field Tested">Field Tested</option>
+          <option value="Well Worn">Well Worn</option>
+          <option value="Battle Scarred">Battle Scarred</option>
+        </select>
+      </label>
 
-      <label for="sellPrice">Myyntihinta (€):</label>
-      <input type="number" id="sellPrice" step="0.01" min="0" required />
+      <label>
+        Osto (€/USD):
+        <input type="number" step="0.01" id="buyPrice" required />
+      </label>
 
-      <label for="taxPercent">Veroprosentti (%):</label>
-      <input type="number" id="taxPercent" step="0.01" min="0" max="100" value="30" required />
+      <label>
+        Myynti (€/USD):
+        <input type="number" step="0.01" id="sellPrice" required />
+      </label>
+
+      <label>
+        Lähde ostolle:
+        <select id="buySource" required>
+          <option value="Steam Market">Steam Market</option>
+          <option value="OP Skins">OP Skins</option>
+          <option value="Third Party">Third Party</option>
+        </select>
+      </label>
 
       <div class="buttons">
-        <button type="submit" id="saveBtn">Tallenna</button>
+        <button type="submit" id="addEditBtn">Lisää skin</button>
         <button type="button" id="cancelEditBtn" style="display:none;">Peruuta muokkaus</button>
       </div>
     </form>
 
-    <input type="text" id="searchInput" placeholder="Hae skinejä..." style="display:none;" />
+    <input type="text" id="searchInput" placeholder="Hae skinejä nimellä tai lähteellä..." style="display:none;" />
 
     <div id="stats" style="display:none;">
       <p>Skinejä yhteensä: <span id="totalSkins">0</span></p>
-      <p>Kokonaisvoitto (€): <span id="totalProfit">0.00</span></p>
+      <p>Keskiosto: <span id="avgBuyPrice">0.00</span> €</p>
+      <p>Keski-myyntihinta: <span id="avgSellPrice">0.00</span> €</p>
+      <p>Keski-prosentti: <span id="avgProfitPercent">0.00</span> %</p>
     </div>
 
     <table id="skinsTable" style="display:none;">
       <thead>
         <tr>
-          <th data-sort="name">Skinin nimi</th>
-          <th data-sort="buy">Ostohinta (€)</th>
-          <th data-sort="sell">Myyntihinta (€)</th>
-          <th data-sort="profit">Voitto (€)</th>
+          <th data-key="name">Skin</th>
+          <th data-key="wear">Kulumamalli</th>
+          <th data-key="buy">Osto (€)</th>
+          <th data-key="sell">Myynti (€)</th>
+          <th data-key="profit">Voitto (€)</th>
+          <th data-key="profitPercent">Voitto (%)</th>
+          <th data-key="source">Lähde</th>
           <th>Toiminnot</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        <!-- Data lisääntyy tähän -->
+      </tbody>
     </table>
+
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
 
   <script>
-    // Firebase configuration - korvaa omillasi!
+    // Tässä sinun Firebase-konfiguraatiosi:
     const firebaseConfig = {
   apiKey: "AIzaSyDj3YnvlbQPM5yvlYTEohrup65bQCBbwDY",
   authDomain: "vilin-mestari-sijoitus-voitot.firebaseapp.com",
@@ -404,411 +352,260 @@ table#skinsTable tbody td {
   measurementId: "G-5683KL29W1"
     };
 
-    // Alusta Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // DOM elementit
-    const signInBtn = document.getElementById('signInBtn');
-    const signOutBtn = document.getElementById('signOutBtn');
-    const userInfoDiv = document.getElementById('user-info');
-    const userEmailSpan = document.getElementById('user-email');
+    // DOM-elementit
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const userInfo = document.getElementById('user-info');
+    const userNameSpan = document.getElementById('user-name');
+
     const addSkinForm = document.getElementById('addSkinForm');
-    const editIndexInput = document.getElementById('editIndex');
     const skinNameInput = document.getElementById('skinName');
+    const wearLevelSelect = document.getElementById('wearLevel');
     const buyPriceInput = document.getElementById('buyPrice');
     const sellPriceInput = document.getElementById('sellPrice');
-    const taxPercentInput = document.getElementById('taxPercent');
-    const saveBtn = document.getElementById('saveBtn');
+    const buySourceSelect = document.getElementById('buySource');
+    const addEditBtn = document.getElementById('addEditBtn');
     const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const editIndexInput = document.getElementById('editIndex');
+
     const searchInput = document.getElementById('searchInput');
-    const skinsTable = document.getElementById('skinsTable');
-    const skinsTableBody = skinsTable.querySelector('tbody');
     const statsDiv = document.getElementById('stats');
     const totalSkinsSpan = document.getElementById('totalSkins');
-    const totalProfitSpan = document.getElementById('totalProfit');
-    const loader = document.getElementById('loader');
+    const avgBuyPriceSpan = document.getElementById('avgBuyPrice');
+    const avgSellPriceSpan = document.getElementById('avgSellPrice');
+    const avgProfitPercentSpan = document.getElementById('avgProfitPercent');
 
-    // Sovelluksen tila
+    const skinsTable = document.getElementById('skinsTable');
+    const skinsTableBody = skinsTable.querySelector('tbody');
+
     let skins = [];
-    let currentUser = null;
-    let sortConfig = { key: 'name', direction: 'asc' };
+    let sortKey = null;
+    let sortAsc = true;
 
-    // Näytä/piilota elementtejä kirjautumistilan mukaan
-    function updateUIForUser(user) {
-      if(user) {
-        currentUser = user;
-        userEmailSpan.textContent = user.email;
-        userInfoDiv.style.display = 'flex';
-        signInBtn.style.display = 'none';
+    // Google-kirjautuminen
+    loginBtn.onclick = () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(err => alert("Kirjautumisvirhe: " + err.message));
+    };
+
+    logoutBtn.onclick = () => auth.signOut();
+
+    // Kuuntele kirjautumistila
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        userNameSpan.textContent = user.displayName;
+        loginBtn.style.display = 'none';
+        userInfo.style.display = 'flex';
         addSkinForm.style.display = 'block';
         searchInput.style.display = 'block';
-        skinsTable.style.display = 'table';
         statsDiv.style.display = 'block';
-        cancelEditBtn.style.display = 'none';
+        skinsTable.style.display = 'table';
+
+        // Lataa skinit Firestoresta käyttäjäkohtaisesti
+        loadSkins(user.uid);
       } else {
-        currentUser = null;
-        userEmailSpan.textContent = '';
-        userInfoDiv.style.display = 'none';
-        signInBtn.style.display = 'inline-block';
+        userNameSpan.textContent = '';
+        loginBtn.style.display = 'block';
+        userInfo.style.display = 'none';
         addSkinForm.style.display = 'none';
         searchInput.style.display = 'none';
-        skinsTable.style.display = 'none';
         statsDiv.style.display = 'none';
-      }
-    }
+        skinsTable.style.display = 'none';
 
-    // Näytä latausspinneri
-    function showLoader(show) {
-      loader.style.display = show ? 'block' : 'none';
-    }
-
-    // Kirjautuminen Googlella
-    signInBtn.addEventListener('click', () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-      .catch(e => alert('Kirjautumisvirhe: ' + e.message));
-    });
-
-    // Uloskirjautuminen
-    signOutBtn.addEventListener('click', () => {
-      auth.signOut();
-    });
-
-    // Kuuntele kirjautumistilaa
-    auth.onAuthStateChanged(async user => {
-      updateUIForUser(user);
-      if(user) {
-        await loadSkins();
-      } else {
         skins = [];
-        renderTable();
-        updateStats();
+        renderSkins();
+        clearForm();
       }
     });
 
-    // Lataa skinit Firestoresta käyttäjälle
-    async function loadSkins() {
-      if(!currentUser) return;
-      showLoader(true);
-      try {
-        const userSkinsDoc = await db.collection('skins').doc(currentUser.uid).get();
-        if(userSkinsDoc.exists) {
-          skins = userSkinsDoc.data().skins || [];
-        } else {
+    function loadSkins(uid) {
+      // Firestore: Kuuntele reaaliaikaisesti käyttäjän skin-kokoelmaa
+      db.collection('users').doc(uid).collection('skins')
+        .onSnapshot(snapshot => {
           skins = [];
-        }
-        renderTable();
-        updateStats();
-      } catch(e) {
-        alert('Virhe skinejä ladatessa: ' + e.message);
-      }
-      showLoader(false);
+          snapshot.forEach(doc => {
+            skins.push({...doc.data(), id: doc.id});
+          });
+          renderSkins();
+          calculateStats();
+        }, error => {
+          alert("Virhe tietojen latauksessa: " + error.message);
+        });
     }
 
-    // Tallenna skinit Firestoreen
-    async function saveSkins() {
-      if(!currentUser) return;
-      showLoader(true);
-      try {
-        await db.collection('skins').doc(currentUser.uid).set({ skins });
-      } catch(e) {
-        alert('Virhe skinejä tallennettaessa: ' + e.message);
-      }
-      showLoader(false);
-    }
-
-    // Laske voitto
-    function laskeVoitto(ostohinta, myyntihinta, vero) {
-      const veroProsentti = vero / 100;
-      return myyntihinta - ostohinta - (myyntihinta * veroProsentti);
-    }
-
-    // Päivitä tilastot
-    function updateStats() {
-      totalSkinsSpan.textContent = skins.length;
-      const totalProfit = skins.reduce((sum, s) => sum + laskeVoitto(s.buyPrice, s.sellPrice, s.taxPercent), 0);
-      totalProfitSpan.textContent = totalProfit.toFixed(2);
-    }
-
-    // Tyhjennä lomake
-    function clearForm() {
-      editIndexInput.value = -1;
-      skinNameInput.value = '';
-      buyPriceInput.value = '';
-      sellPriceInput.value = '';
-      taxPercentInput.value = 30;
-      cancelEditBtn.style.display = 'none';
-      saveBtn.textContent = 'Tallenna';
-    }
-
-    // Renderöi taulukko (filteröi hakusanan mukaan)
-    function renderTable() {
-      const filter = searchInput.value.toLowerCase();
-      let filteredSkins = skins.filter(s => s.skinName.toLowerCase().includes(filter));
-
-      // Lajittelu
-      filteredSkins.sort((a,b) => {
-        let v1, v2;
-        switch(sortConfig.key) {
-          case 'name': 
-            v1 = a.skinName.toLowerCase();
-            v2 = b.skinName.toLowerCase();
-            break;
-          case 'buy':
-            v1 = a.buyPrice;
-            v2 = b.buyPrice;
-            break;
-          case 'sell':
-            v1 = a.sellPrice;
-            v2 = b.sellPrice;
-            break;
-          case 'profit':
-            v1 = laskeVoitto(a.buyPrice, a.sellPrice, a.taxPercent);
-            v2 = laskeVoitto(b.buyPrice, b.sellPrice, b.taxPercent);
-            break;
-          default:
-            v1 = a.skinName.toLowerCase();
-            v2 = b.skinName.toLowerCase();
-        }
-        if(v1 < v2) return sortConfig.direction === 'asc' ? -1 : 1;
-        if(v1 > v2) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
-      });
-
-      skinsTableBody.innerHTML = '';
-      if(filteredSkins.length === 0) {
-        skinsTableBody.innerHTML = `<tr><td colspan="5">Ei skinejä haun perusteella</td></tr>`;
-        updateStats();
-        return;
-      }
-
-      filteredSkins.forEach((skin, i) => {
-        const profit = laskeVoitto(skin.buyPrice, skin.sellPrice, skin.taxPercent);
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-          <td>${skin.skinName}</td>
-          <td>${skin.buyPrice.toFixed(2)} €</td>
-          <td>${skin.sellPrice.toFixed(2)} €</td>
-          <td>${profit.toFixed(2)} €</td>
-          <td>
-            <button class="edit-btn" data-index="${i}">Muokkaa</button>
-            <button class="delete-btn" data-index="${i}">Poista</button>
-          </td>
-        `;
-        skinsTableBody.appendChild(row);
-      });
-      updateStats();
-    }
-
-    // Lisää tai päivitä skin
-    addSkinForm.addEventListener('submit', async e => {
+    // Lomakkeen lähetys (lisää/muokkaa)
+    addSkinForm.onsubmit = e => {
       e.preventDefault();
 
-      const skinName = skinNameInput.value.trim();
-      const buyPrice = parseFloat(buyPriceInput.value);
-      const sellPrice = parseFloat(sellPriceInput.value);
-      const taxPercent = parseFloat(taxPercentInput.value);
+      const skinData = {
+        name: skinNameInput.value.trim(),
+        wear: wearLevelSelect.value,
+        buy: parseFloat(buyPriceInput.value),
+        sell: parseFloat(sellPriceInput.value),
+        source: buySourceSelect.value
+      };
 
-      if(!skinName || isNaN(buyPrice) || isNaN(sellPrice) || isNaN(taxPercent)) {
-        alert('Täytä kaikki kentät oikein.');
+      if (skinData.name === '' || isNaN(skinData.buy) || isNaN(skinData.sell)) {
+        alert('Täytä kaikki kentät oikein!');
         return;
       }
 
-      const editIndex = parseInt(editIndexInput.value);
-      if(editIndex >= 0 && editIndex < skins.length) {
-        skins[editIndex] = { skinName, buyPrice, sellPrice, taxPercent };
+      const user = auth.currentUser;
+      if (!user) return alert('Et ole kirjautunut sisään!');
+
+      const skinId = editIndexInput.value;
+      if (skinId === '-1') {
+        // Lisää uusi
+        db.collection('users').doc(user.uid).collection('skins').add(skinData).then(() => {
+          clearForm();
+        }).catch(err => alert('Virhe lisättäessä: ' + err.message));
       } else {
-        skins.push({ skinName, buyPrice, sellPrice, taxPercent });
+        // Päivitä olemassaoleva
+        db.collection('users').doc(user.uid).collection('skins').doc(skinId).update(skinData).then(() => {
+          clearForm();
+        }).catch(err => alert('Virhe päivitettäessä: ' + err.message));
+      }
+    };
+
+    cancelEditBtn.onclick = () => clearForm();
+
+    // Tyhjennä lomake ja palauta oletukset
+    function clearForm() {
+      editIndexInput.value = '-1';
+      skinNameInput.value = '';
+      wearLevelSelect.value = 'Factory New';
+      buyPriceInput.value = '';
+      sellPriceInput.value = '';
+      buySourceSelect.value = 'Steam Market';
+      addEditBtn.textContent = 'Lisää skin';
+      cancelEditBtn.style.display = 'none';
+    }
+
+    // Renderöi taulukko skineistä
+    function renderSkins() {
+      // Suodata haun mukaan
+      const filterText = searchInput.value.trim().toLowerCase();
+      let filtered = skins.filter(skin => 
+        skin.name.toLowerCase().includes(filterText) ||
+        skin.source.toLowerCase().includes(filterText)
+      );
+
+      // Lajittele
+      if (sortKey) {
+        filtered.sort((a,b) => {
+          let valA = a[sortKey];
+          let valB = b[sortKey];
+          // Jos numerot, vertaa numeerisesti
+          if(sortKey === 'buy' || sortKey === 'sell' || sortKey === 'profit' || sortKey === 'profitPercent') {
+            valA = (sortKey === 'profit' || sortKey === 'profitPercent') ? (a.sell - a.buy) : valA;
+            valB = (sortKey === 'profit' || sortKey === 'profitPercent') ? (b.sell - b.buy) : valB;
+            return sortAsc ? valA - valB : valB - valA;
+          }
+          // Muuten merkkijonovertailu
+          if(valA < valB) return sortAsc ? -1 : 1;
+          if(valA > valB) return sortAsc ? 1 : -1;
+          return 0;
+        });
       }
 
-      await saveSkins();
-      renderTable();
-      clearForm();
-    });
-
-    // Peruuta muokkaus
-    cancelEditBtn.addEventListener('click', () => {
-      clearForm();
-    });
-
-    // Muokkaus- ja poisto napit taulukossa
-    skinsTableBody.addEventListener('click', async e => {
-      if(e.target.classList.contains('edit-btn')) {
-        const idx = parseInt(e.target.dataset.index);
-        if(isNaN(idx)) return;
-
-        const skin = skins[idx];
-        skinNameInput.value = skin.skinName;
-        buyPriceInput.value = skin.buyPrice;
-        sellPriceInput.value = skin.sellPrice;
-        taxPercentInput.value = skin.taxPercent;
-        editIndexInput.value = idx;
-        cancelEditBtn.style.display = 'inline-block';
-        saveBtn.textContent = 'Päivitä';
-        skinNameInput.focus();
-
-      } else if(e.target.classList.contains('delete-btn')) {
-        const idx = parseInt(e.target.dataset.index);
-        if(isNaN(idx)) return;
-        if(confirm(`Haluatko varmasti poistaa skinin "${skins[idx].skinName}"?`)) {
-          skins.splice(idx, 1);
-          await saveSkins();
-          renderTable();
-        }
+      skinsTableBody.innerHTML = '';
+      if(filtered.length === 0){
+        skinsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:#888;">Ei näytettäviä skinejä</td></tr>`;
+        return;
       }
-    });
+
+      for (const skin of filtered) {
+        const profit = skin.sell - skin.buy;
+        const profitPercent = (profit / skin.buy) * 100;
+        const profitClass = profit >= 0 ? 'profit' : 'loss';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${skin.name}</td>
+          <td>${skin.wear}</td>
+          <td>${skin.buy.toFixed(2)}</td>
+          <td>${skin.sell.toFixed(2)}</td>
+          <td class="${profitClass}">${profit.toFixed(2)}</td>
+          <td class="${profitClass}">${profitPercent.toFixed(2)}%</td>
+          <td>${skin.source}</td>
+          <td>
+            <button onclick="editSkin('${skin.id}')">Muokkaa</button>
+            <button onclick="deleteSkin('${skin.id}')">Poista</button>
+          </td>
+        `;
+        skinsTableBody.appendChild(tr);
+      }
+    }
+
+    // Muokkaa skinia
+    window.editSkin = function(id) {
+      const skin = skins.find(s => s.id === id);
+      if (!skin) return;
+      editIndexInput.value = skin.id;
+      skinNameInput.value = skin.name;
+      wearLevelSelect.value = skin.wear;
+      buyPriceInput.value = skin.buy;
+      sellPriceInput.value = skin.sell;
+      buySourceSelect.value = skin.source;
+      addEditBtn.textContent = 'Tallenna muutokset';
+      cancelEditBtn.style.display = 'inline-block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Poista skin
+    window.deleteSkin = function(id) {
+      if (!confirm('Haluatko varmasti poistaa tämän skinin?')) return;
+      const user = auth.currentUser;
+      if (!user) return alert('Et ole kirjautunut sisään!');
+      db.collection('users').doc(user.uid).collection('skins').doc(id).delete()
+        .catch(err => alert('Virhe poistettaessa: ' + err.message));
+    };
+
+    // Päivitä tilastot
+    function calculateStats() {
+      if (skins.length === 0) {
+        totalSkinsSpan.textContent = '0';
+        avgBuyPriceSpan.textContent = '0.00';
+        avgSellPriceSpan.textContent = '0.00';
+        avgProfitPercentSpan.textContent = '0.00';
+        return;
+      }
+      const total = skins.length;
+      const sumBuy = skins.reduce((a, s) => a + s.buy, 0);
+      const sumSell = skins.reduce((a, s) => a + s.sell, 0);
+      const sumProfitPercent = skins.reduce((a, s) => a + ((s.sell - s.buy) / s.buy) * 100, 0);
+
+      totalSkinsSpan.textContent = total;
+      avgBuyPriceSpan.textContent = (sumBuy / total).toFixed(2);
+      avgSellPriceSpan.textContent = (sumSell / total).toFixed(2);
+      avgProfitPercentSpan.textContent = (sumProfitPercent / total).toFixed(2);
+    }
 
     // Haku
-    searchInput.addEventListener('input', () => {
-      renderTable();
-    });
+    searchInput.oninput = () => renderSkins();
 
-    // Lajittelu sarakeotsikoista
-    const headers = document.querySelectorAll('thead th[data-sort]');
-    headers.forEach(header => {
-      header.addEventListener('click', () => {
-        const key = header.dataset.sort;
-        if(sortConfig.key === key) {
-          sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+    // Taulukon otsikot lajitteluun
+    document.querySelectorAll('#skinsTable thead th[data-key]').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.getAttribute('data-key');
+        if (sortKey === key) {
+          sortAsc = !sortAsc;
         } else {
-          sortConfig.key = key;
-          sortConfig.direction = 'asc';
+          sortKey = key;
+          sortAsc = true;
         }
-        headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
-        header.classList.add(sortConfig.direction === 'asc' ? 'sort-asc' : 'sort-desc');
-        renderTable();
+        // Poista lajittelun merkit muista sarakkeista
+        document.querySelectorAll('#skinsTable thead th').forEach(h => h.classList.remove('sort-asc','sort-desc'));
+        th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+        renderSkins();
       });
     });
- // Lataa skinit Firestoresta
-  async function loadSkins() {
-    showLoader(true);
-    try {
-      const snapshot = await db.collection('users').doc(currentUser.uid).collection('skins').get();
-      skins = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderTable();
-    } catch (error) {
-      alert('Virhe ladattaessa skinejä: ' + error.message);
-    }
-    showLoader(false);
-  }
-
-  // Tallenna tai päivitä skin
-  addSkinForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = skinNameInput.value.trim();
-    const buy = parseFloat(buyPriceInput.value);
-    const sell = parseFloat(sellPriceInput.value);
-    const tax = parseFloat(taxPercentInput.value);
-    const profit = (sell * (1 - tax / 100)) - buy;
-
-    const data = { name, buy, sell, tax, profit };
-
-    try {
-      if (editIndexInput.value === "-1") {
-        // Uusi skin
-        const docRef = await db.collection('users').doc(currentUser.uid).collection('skins').add(data);
-        skins.push({ id: docRef.id, ...data });
-      } else {
-        // Muokataan olemassa olevaa
-        const index = parseInt(editIndexInput.value);
-        const id = skins[index].id;
-        await db.collection('users').doc(currentUser.uid).collection('skins').doc(id).set(data);
-        skins[index] = { id, ...data };
-      }
-      renderTable();
-      addSkinForm.reset();
-      editIndexInput.value = -1;
-      cancelEditBtn.style.display = 'none';
-    } catch (error) {
-      alert('Tallennusvirhe: ' + error.message);
-    }
-  });
-
-  // Peruuta muokkaus
-  cancelEditBtn.addEventListener('click', () => {
-    addSkinForm.reset();
-    editIndexInput.value = -1;
-    cancelEditBtn.style.display = 'none';
-  });
-
-  // Poista skin
-  async function deleteSkin(index) {
-    const id = skins[index].id;
-    try {
-      await db.collection('users').doc(currentUser.uid).collection('skins').doc(id).delete();
-      skins.splice(index, 1);
-      renderTable();
-    } catch (error) {
-      alert('Virhe poistettaessa: ' + error.message);
-    }
-  }
-
-  // Muokkaa skin
-  function editSkin(index) {
-    const skin = skins[index];
-    skinNameInput.value = skin.name;
-    buyPriceInput.value = skin.buy;
-    sellPriceInput.value = skin.sell;
-    taxPercentInput.value = skin.tax;
-    editIndexInput.value = index;
-    cancelEditBtn.style.display = 'inline-block';
-  }
-
-  // Taulukon renderöinti ja lajittelu
-  function renderTable() {
-    const searchTerm = searchInput.value.trim().toLowerCase();
-    let filtered = skins.filter(s => s.name.toLowerCase().includes(searchTerm));
-
-    filtered.sort((a, b) => {
-      const { key, direction } = sortConfig;
-      const valA = a[key];
-      const valB = b[key];
-      return direction === 'asc' ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
-    });
-
-    skinsTableBody.innerHTML = '';
-    filtered.forEach((skin, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${skin.name}</td>
-        <td>${skin.buy.toFixed(2)}</td>
-        <td>${skin.sell.toFixed(2)}</td>
-        <td>${skin.profit.toFixed(2)}</td>
-        <td>
-          <button class="edit-btn" onclick="editSkin(${index})">Muokkaa</button>
-          <button class="delete-btn" onclick="deleteSkin(${index})">Poista</button>
-        </td>
-      `;
-      skinsTableBody.appendChild(row);
-    });
-
-    totalSkinsSpan.textContent = filtered.length;
-    const totalProfit = filtered.reduce((sum, s) => sum + s.profit, 0);
-    totalProfitSpan.textContent = totalProfit.toFixed(2);
-  }
-
-  // Lajittelun käsittelijät
-  document.querySelectorAll('th[data-sort]').forEach(th => {
-    th.addEventListener('click', () => {
-      const key = th.getAttribute('data-sort');
-      if (sortConfig.key === key) {
-        sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
-      } else {
-        sortConfig.key = key;
-        sortConfig.direction = 'asc';
-      }
-      document.querySelectorAll('th[data-sort]').forEach(t => t.classList.remove('sort-asc', 'sort-desc'));
-      th.classList.add(sortConfig.direction === 'asc' ? 'sort-asc' : 'sort-desc');
-      renderTable();
-    });
-  });
-
-  // Haku
-  searchInput.addEventListener('input', renderTable);
 
   </script>
+
 </body>
 </html>
