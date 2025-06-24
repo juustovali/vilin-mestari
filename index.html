@@ -91,7 +91,18 @@
     #themeButtons button {
       margin-right: 0.5rem;
     }
+
+    #userInfo {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+
   </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body data-theme="light">
 
@@ -103,7 +114,11 @@
     <button id="blueBtn">Sininen</button>
   </div>
 
-  <form id="addSkinForm" aria-label="Lisää uusi skin">
+  <div id="userInfo">
+    Ei kirjautunut <button id="loginBtn">Kirjaudu Googlella</button>
+  </div>
+
+  <form id="addSkinForm" aria-label="Lisää uusi skin" style="display:none;">
     <div>
       <label for="name">Skinin nimi</label>
       <input id="name" name="name" type="text" required />
@@ -138,7 +153,7 @@
     <button type="submit" id="addSkinBtn">Lisää skin</button>
   </form>
 
-  <table id="skinsTable" aria-label="Skinit taulukko">
+  <table id="skinsTable" aria-label="Skinit taulukko" style="display:none;">
     <thead>
       <tr>
         <th>Nimi</th>
@@ -156,10 +171,32 @@
   </table>
 
   <script>
+    // === Firebase-konfiguraatio (vaihda omiin arvoihisi) ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyDj3YnvlbQPM5yvlYTEohrup65bQCBbwDY",
+  authDomain: "vilin-mestari-sijoitus-voitot.firebaseapp.com",
+  projectId: "vilin-mestari-sijoitus-voitot",
+  storageBucket: "vilin-mestari-sijoitus-voitot.firebasestorage.app",
+  messagingSenderId: "912067809877",
+  appId: "1:912067809877:web:84c11fc354f5372dcb7adc",
+  measurementId: "G-5683KL29W1"
+    };
+
+    // Firebase alustaminen
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // DOM-elementit
+    const userInfo = document.getElementById('userInfo');
+    const loginBtn = document.getElementById('loginBtn');
     const addSkinForm = document.getElementById('addSkinForm');
-    const skinsTableBody = document.querySelector('#skinsTable tbody');
+    const skinsTable = document.getElementById('skinsTable');
+    const skinsTableBody = skinsTable.querySelector('tbody');
+
     let skins = [];
     let editIndex = -1;
+    let currentUser = null;
 
     // Teemapainikkeet
     const lightBtn = document.getElementById('lightBtn');
@@ -174,8 +211,62 @@
     darkBtn.addEventListener('click', () => setTheme('dark'));
     blueBtn.addEventListener('click', () => setTheme('blue'));
 
+    // Kirjautuminen Googlella
+    loginBtn.addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(e => alert("Kirjautumisvirhe: " + e.message));
+    });
+
+    // Kuuntele kirjautumistilaa
+    auth.onAuthStateChanged(async (user) => {
+      currentUser = user;
+      if (user) {
+        userInfo.innerHTML = `Kirjautunut: <span>${user.displayName}</span> <button id="logoutBtn">Kirjaudu ulos</button>`;
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+        addSkinForm.style.display = 'block';
+        skinsTable.style.display = 'table';
+        loginBtn.style.display = 'none';
+        await loadSkins();
+        renderSkins();
+      } else {
+        userInfo.innerHTML = `Ei kirjautunut`;
+        loginBtn.style.display = 'inline-block';
+        addSkinForm.style.display = 'none';
+        skinsTable.style.display = 'none';
+        skins = [];
+        renderSkins();
+      }
+    });
+
+    // Lataa skinit Firestoresta
+    async function loadSkins() {
+      if (!currentUser) return;
+      try {
+        const docRef = db.collection('users').doc(currentUser.uid);
+        const doc = await docRef.get();
+        if (doc.exists) {
+          skins = doc.data().skins || [];
+        } else {
+          skins = [];
+        }
+      } catch (e) {
+        alert("Virhe skinien latauksessa: " + e.message);
+      }
+    }
+
+    // Tallenna skinit Firestoreen
+    async function saveSkins() {
+      if (!currentUser) return;
+      try {
+        const docRef = db.collection('users').doc(currentUser.uid);
+        await docRef.set({ skins });
+      } catch (e) {
+        alert("Virhe skinien tallennuksessa: " + e.message);
+      }
+    }
+
     // Lomakkeen käsittely
-    addSkinForm.addEventListener('submit', (e) => {
+    addSkinForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const name = addSkinForm.name.value.trim();
@@ -184,14 +275,14 @@
       const condition = addSkinForm.condition.value;
       const purchaseSource = addSkinForm.purchaseSource.value;
 
-      if(!name || isNaN(buyPrice) || isNaN(sellPrice) || !condition || !purchaseSource) {
+      if (!name || isNaN(buyPrice) || isNaN(sellPrice) || !condition || !purchaseSource) {
         alert('Täytä kaikki kentät oikein.');
         return;
       }
 
       const newSkin = { name, buyPrice, sellPrice, condition, purchaseSource };
 
-      if(editIndex === -1) {
+      if (editIndex === -1) {
         skins.push(newSkin);
       } else {
         skins[editIndex] = newSkin;
@@ -200,6 +291,7 @@
       }
 
       addSkinForm.reset();
+      await saveSkins();
       renderSkins();
     });
 
@@ -238,23 +330,23 @@
         });
       });
 
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.delete-btn').forEach(async btn => {
+        btn.addEventListener('click', async (e) => {
           const i = parseInt(e.target.dataset.index);
-          if(confirm(`Haluatko varmasti poistaa skinin "${skins[i].name}"?`)) {
+          if (confirm(`Haluatko varmasti poistaa skinin "${skins[i].name}"?`)) {
             skins.splice(i, 1);
-            if(editIndex === i) {
+            if (editIndex === i) {
               editIndex = -1;
               addSkinForm.reset();
               addSkinForm.querySelector('button[type="submit"]').textContent = 'Lisää skin';
             }
+            await saveSkins();
             renderSkins();
           }
         });
       });
     }
 
-    renderSkins();
   </script>
 </body>
 </html>
