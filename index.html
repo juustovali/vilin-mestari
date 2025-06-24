@@ -5,250 +5,258 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Vilin Mestari Sijoitus Voitot</title>
   <style>
-    /* Perusasetukset */
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f7fa;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    /* Perusasetukset - tumma teema */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #121212; /* erittäin tumma */
+  margin: 0;
+  padding: 20px;
+  color: #ddd;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    h1, h2 {
-      font-weight: 700;
-      color: #2c3e50;
-    }
+h1, h2 {
+  font-weight: 700;
+  color: #ff6600; /* oranssi korostus */
+}
 
-    /* Container */
-    .container {
-      max-width: 960px;
-      width: 100%;
-      background: #fff;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      padding: 30px 40px;
-      box-sizing: border-box;
-    }
+/* Container */
+.container {
+  max-width: 960px;
+  width: 100%;
+  background: #1e1e1e; /* tummanharmaa */
+  box-shadow: 0 6px 15px rgba(255, 102, 0, 0.3);
+  border-radius: 8px;
+  padding: 30px 40px;
+  box-sizing: border-box;
+}
 
-    /* Käyttäjätiedot ja nappulat */
-    #user-info {
-      margin-bottom: 25px;
-      font-size: 1.1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #e8f0fe;
-      padding: 10px 20px;
-      border-radius: 6px;
-      box-shadow: inset 0 0 8px #bbd2ff;
-    }
+/* Käyttäjätiedot ja nappulat */
+#user-info {
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2a2a2a; /* tumma */
+  padding: 10px 20px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 8px #ff6600cc; /* oranssi hehku */
+}
 
-    #user-info span {
-      font-weight: 600;
-      color: #1a73e8;
-    }
+#user-info span {
+  font-weight: 600;
+  color: #ff6600;
+}
 
-    button {
-      background-color: #1a73e8;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
-      box-shadow: 0 2px 6px rgba(26,115,232,0.4);
-    }
-    button:hover {
-      background-color: #155ab6;
-    }
-    button:disabled {
-      background-color: #a3bffa;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
+button {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+  box-shadow: 0 2px 6px rgba(255, 102, 0, 0.6);
+}
+button:hover {
+  background-color: #e65500;
+}
+button:disabled {
+  background-color: #ffad7a;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
-    /* Lomake */
-    form#addSkinForm {
-      margin-bottom: 30px;
-      background: #fafafa;
-      border: 1px solid #d6d9dc;
-      padding: 25px 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    form#addSkinForm h2 {
-      margin-top: 0;
-      margin-bottom: 20px;
-      font-size: 1.4rem;
-      color: #34495e;
-    }
+/* Lomake */
+form#addSkinForm {
+  margin-bottom: 30px;
+  background: #222222;
+  border: 1px solid #444;
+  padding: 25px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(255, 102, 0, 0.1);
+}
+form#addSkinForm h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  color: #ff6600;
+}
 
-    form#addSkinForm label {
-      display: block;
-      margin-bottom: 12px;
-      font-weight: 600;
-      color: #2c3e50;
-    }
-    form#addSkinForm input[type="text"],
-    form#addSkinForm input[type="number"],
-    form#addSkinForm select {
-      width: 100%;
-      padding: 8px 12px;
-      font-size: 1rem;
-      border: 1px solid #bbb;
-      border-radius: 5px;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease;
-    }
-    form#addSkinForm input[type="text"]:focus,
-    form#addSkinForm input[type="number"]:focus,
-    form#addSkinForm select:focus {
-      border-color: #1a73e8;
-      outline: none;
-      box-shadow: 0 0 6px #aecbfa;
-    }
+form#addSkinForm label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #ddd;
+}
+form#addSkinForm input[type="text"],
+form#addSkinForm input[type="number"],
+form#addSkinForm select {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #666;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background: #121212;
+  color: #eee;
+  transition: border-color 0.3s ease;
+}
+form#addSkinForm input[type="text"]:focus,
+form#addSkinForm input[type="number"]:focus,
+form#addSkinForm select:focus {
+  border-color: #ff6600;
+  outline: none;
+  box-shadow: 0 0 6px #ff6600cc;
+}
 
-    /* Lomake napit rinnakkain */
-    form#addSkinForm .buttons {
-      margin-top: 20px;
-      display: flex;
-      gap: 15px;
-    }
-    form#addSkinForm .buttons button {
-      flex: 1;
-    }
+/* Lomake napit rinnakkain */
+form#addSkinForm .buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+}
+form#addSkinForm .buttons button {
+  flex: 1;
+}
 
-    /* Tilastot */
-    #stats {
-      margin-bottom: 30px;
-      background: #e3f2fd;
-      padding: 20px 30px;
-      border-radius: 8px;
-      box-shadow: inset 0 0 8px #90caf9;
-      color: #0d47a1;
-    }
-    #stats p {
-      font-size: 1.1rem;
-      margin: 8px 0;
-      font-weight: 600;
-    }
+/* Tilastot */
+#stats {
+  margin-bottom: 30px;
+  background: #2a2a2a;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 8px #ff6600cc;
+  color: #ffad7a;
+}
+#stats p {
+  font-size: 1.1rem;
+  margin: 8px 0;
+  font-weight: 600;
+}
 
-    /* Haku */
-    #searchInput {
-      padding: 10px 15px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #bbb;
-      width: 100%;
-      max-width: 300px;
-      margin-bottom: 20px;
-      transition: border-color 0.3s ease;
-    }
-    #searchInput:focus {
-      border-color: #1a73e8;
-      outline: none;
-      box-shadow: 0 0 8px #aecbfa;
-    }
+/* Haku */
+#searchInput {
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #666;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 20px;
+  background: #121212;
+  color: #eee;
+  transition: border-color 0.3s ease;
+}
+#searchInput:focus {
+  border-color: #ff6600;
+  outline: none;
+  box-shadow: 0 0 8px #ff6600cc;
+}
 
-    /* Taulukko */
-    table#skinsTable {
-      width: 100%;
-      border-collapse: collapse;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    table#skinsTable thead {
-      background-color: #1a73e8;
-      color: white;
-      user-select: none;
-    }
-    table#skinsTable th, table#skinsTable td {
-      padding: 12px 15px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-    }
-    table#skinsTable th {
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1rem;
-      position: relative;
-      user-select: none;
-    }
-    /* Lajittelun nuolet */
-    th.sort-asc::after,
-    th.sort-desc::after {
-      content: '';
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      border: 6px solid transparent;
-    }
-    th.sort-asc::after {
-      border-bottom-color: white;
-    }
-    th.sort-desc::after {
-      border-top-color: white;
-    }
+/* Taulukko */
+table#skinsTable {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 2px 8px rgba(255, 102, 0, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e1e1e;
+  color: #ddd;
+}
+table#skinsTable thead {
+  background-color: #ff6600;
+  color: #1e1e1e;
+  user-select: none;
+}
+table#skinsTable th, table#skinsTable td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+table#skinsTable th {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  position: relative;
+  user-select: none;
+}
+/* Lajittelun nuolet */
+th.sort-asc::after,
+th.sort-desc::after {
+  content: '';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+}
+th.sort-asc::after {
+  border-bottom-color: #1e1e1e;
+}
+th.sort-desc::after {
+  border-top-color: #1e1e1e;
+}
 
-    /* Taulukon rivien hover */
-    table#skinsTable tbody tr:hover {
-      background-color: #f0f7ff;
-    }
+/* Taulukon rivien hover */
+table#skinsTable tbody tr:hover {
+  background-color: #333;
+}
 
-    /* Voitto/tappio värit */
-    .profit {
-      background-color: #d4f8d4;
-      color: #2e7d32;
-      font-weight: 600;
-    }
-    .loss {
-      background-color: #f8d4d4;
-      color: #b71c1c;
-      font-weight: 600;
-    }
+/* Voitto/tappio värit */
+.profit {
+  background-color: #3a5f0b;
+  color: #a6ff00;
+  font-weight: 600;
+}
+.loss {
+  background-color: #6b0b0b;
+  color: #ff4c4c;
+  font-weight: 600;
+}
 
-    /* Toimintopainikkeet */
-    table#skinsTable button {
-      background-color: #2980b9;
-      padding: 6px 10px;
-      font-size: 0.9rem;
-      margin: 0 4px;
-      border-radius: 5px;
-      box-shadow: 0 2px 6px rgba(41, 128, 185, 0.6);
-    }
-    table#skinsTable button:hover {
-      background-color: #1c5980;
-    }
+/* Toimintopainikkeet */
+table#skinsTable button {
+  background-color: #cc5200;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  margin: 0 4px;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(204, 82, 0, 0.6);
+  color: #fff;
+}
+table#skinsTable button:hover {
+  background-color: #a44200;
+}
 
-    /* Responsiivisuus */
-    @media (max-width: 720px) {
-      .container {
-        padding: 20px;
-      }
-      table#skinsTable th, table#skinsTable td {
-        padding: 8px 6px;
-        font-size: 0.85rem;
-      }
-      #searchInput {
-        max-width: 100%;
-      }
-      form#addSkinForm label {
-        font-size: 0.95rem;
-      }
-      form#addSkinForm input[type="text"],
-      form#addSkinForm input[type="number"],
-      form#addSkinForm select {
-        font-size: 0.9rem;
-      }
-    }
+/* Responsiivisuus */
+@media (max-width: 720px) {
+  .container {
+    padding: 20px;
+  }
+  table#skinsTable th, table#skinsTable td {
+    padding: 8px 6px;
+    font-size: 0.85rem;
+  }
+  #searchInput {
+    max-width: 100%;
+  }
+  form#addSkinForm label {
+    font-size: 0.95rem;
+  }
+  form#addSkinForm input[type="text"],
+  form#addSkinForm input[type="number"],
+  form#addSkinForm select {
+    font-size: 0.9rem;
+  }
+}
+
   </style>
 </head>
 <body>
