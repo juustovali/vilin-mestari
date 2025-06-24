@@ -5,450 +5,207 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Vilin Mestari Sijoitus Voitot</title>
   <style>
-  /* Perusasetukset */
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f4f7fa;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  h1, h2 {
-    font-weight: 700;
-    color: #2c3e50;
-  }
-
-  /* Container */
-  .container {
-    max-width: 960px;
-    width: 100%;
-    background: #fff;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    padding: 30px 40px;
-    box-sizing: border-box;
-  }
-
-  /* Käyttäjätiedot ja nappulat */
-  #user-info {
-    margin-bottom: 25px;
-    font-size: 1.1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #e8f0fe;
-    padding: 10px 20px;
-    border-radius: 6px;
-    box-shadow: inset 0 0 8px #bbd2ff;
-  }
-
-  #user-info span {
-    font-weight: 600;
-    color: #1a73e8;
-  }
-
-  button {
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    user-select: none;
-    box-shadow: 0 2px 6px rgba(26,115,232,0.4);
-  }
-  button:hover {
-    background-color: #155ab6;
-  }
-  button:disabled {
-    background-color: #a3bffa;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-
-  /* Lomake */
-  form#addSkinForm {
-    margin-bottom: 30px;
-    background: #fafafa;
-    border: 1px solid #d6d9dc;
-    padding: 25px 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-  form#addSkinForm h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.4rem;
-    color: #34495e;
-  }
-
-  form#addSkinForm label {
-    display: block;
-    margin-bottom: 12px;
-    font-weight: 600;
-    color: #2c3e50;
-  }
-  form#addSkinForm input[type="text"],
-  form#addSkinForm input[type="number"],
-  form#addSkinForm select {
-    width: 100%;
-    padding: 8px 12px;
-    font-size: 1rem;
-    border: 1px solid #bbb;
-    border-radius: 5px;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease;
-  }
-  form#addSkinForm input[type="text"]:focus,
-  form#addSkinForm input[type="number"]:focus,
-  form#addSkinForm select:focus {
-    border-color: #1a73e8;
-    outline: none;
-    box-shadow: 0 0 6px #aecbfa;
-  }
-
-  /* Lomake napit rinnakkain */
-  form#addSkinForm .buttons {
-    margin-top: 20px;
-    display: flex;
-    gap: 15px;
-  }
-  form#addSkinForm .buttons button {
-    flex: 1;
-  }
-
-  /* Tilastot */
-  #stats {
-    margin-bottom: 30px;
-    background: #e3f2fd;
-    padding: 20px 30px;
-    border-radius: 8px;
-    box-shadow: inset 0 0 8px #90caf9;
-    color: #0d47a1;
-  }
-  #stats p {
-    font-size: 1.1rem;
-    margin: 8px 0;
-    font-weight: 600;
-  }
-
-  /* Haku */
-  #searchInput {
-    padding: 10px 15px;
-    font-size: 1rem;
-    border-radius: 6px;
-    border: 1px solid #bbb;
-    width: 100%;
-    max-width: 300px;
-    margin-bottom: 20px;
-    transition: border-color 0.3s ease;
-  }
-  #searchInput:focus {
-    border-color: #1a73e8;
-    outline: none;
-    box-shadow: 0 0 8px #aecbfa;
-  }
-
-  /* Taulukko */
-  table#skinsTable {
-    width: 100%;
-    border-collapse: collapse;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  table#skinsTable thead {
-    background-color: #1a73e8;
-    color: white;
-    user-select: none;
-  }
-  table#skinsTable th, table#skinsTable td {
-    padding: 12px 15px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-  }
-  table#skinsTable th {
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 1rem;
-    position: relative;
-    user-select: none;
-  }
-  /* Lajittelun nuolet */
-  th.sort-asc::after,
-  th.sort-desc::after {
-    content: '';
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: 6px solid transparent;
-  }
-  th.sort-asc::after {
-    border-bottom-color: white;
-  }
-  th.sort-desc::after {
-    border-top-color: white;
-  }
-
-  /* Taulukon rivien hover */
-  table#skinsTable tbody tr:hover {
-    background-color: #f0f7ff;
-  }
-
-  /* Voitto/tappio värit */
-  .profit {
-    background-color: #d4f8d4;
-    color: #2e7d32;
-    font-weight: 600;
-  }
-  .loss {
-    background-color: #f8d4d4;
-    color: #b71c1c;
-    font-weight: 600;
-  }
-
-  /* Toimintopainikkeet */
-  table#skinsTable button {
-    background-color: #2980b9;
-    padding: 6px 10px;
-    font-size: 0.9rem;
-    margin: 0 4px;
-    border-radius: 5px;
-    box-shadow: 0 2px 6px rgba(41, 128, 185, 0.6);
-  }
-  table#skinsTable button:hover {
-    background-color: #1c5980;
-  }
-
-  /* Responsiivisuus */
-  @media (max-width: 720px) {
-    .container {
-      padding: 20px;
+    /* Teemat */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background: #f4f7fa;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
     }
-    table#skinsTable th, table#skinsTable td {
-      padding: 8px 6px;
-      font-size: 0.85rem;
+    [data-theme="dark"] body {
+      background: #121212;
+      color: #e0e0e0;
     }
-    #searchInput {
-      max-width: 100%;
+    [data-theme="blue"] body {
+      background: #e3f2fd;
+      color: #0d47a1;
     }
-    form#addSkinForm label {
-      font-size: 0.95rem;
+
+    /* Buttonit */
+    button {
+      cursor: pointer;
+      padding: 0.4rem 1rem;
+      margin: 0.2rem;
+      border-radius: 4px;
+      border: none;
+      background-color: #2196f3;
+      color: white;
+      transition: background-color 0.3s;
     }
-    form#addSkinForm input[type="text"],
-    form#addSkinForm input[type="number"],
-    form#addSkinForm select {
-      font-size: 0.9rem;
+    button:hover {
+      background-color: #1976d2;
     }
-  }
-</style>
+    [data-theme="dark"] button {
+      background-color: #444;
+      color: #eee;
+    }
+    [data-theme="dark"] button:hover {
+      background-color: #666;
+    }
+    [data-theme="blue"] button {
+      background-color: #1a73e8;
+      color: white;
+    }
+    [data-theme="blue"] button:hover {
+      background-color: #155ab6;
+    }
+
+    /* Lomake */
+    form > div {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      max-width: 300px;
+      padding: 0.4rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Taulukko */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #ddd;
+    }
+    [data-theme="dark"] th {
+      background-color: #333;
+    }
+
+    /* Teeman valintapainikkeet */
+    #themeButtons button {
+      margin-right: 0.5rem;
+    }
+  </style>
 </head>
-<body>
+<body data-theme="light">
 
-  <header>
-    <h1>Vilin Mestari Sijoitus Voitot</h1>
-    <div class="theme-buttons" aria-label="Väriteeman valinta">
-      <button id="theme-light" title="Vaalea teema">Vaalea</button>
-      <button id="theme-dark" title="Tumma teema">Tumma</button>
-      <button id="theme-blue" title="Sininen teema">Sininen</button>
-    </div>
-  </header>
+  <h1>Vilin Mestari Sijoitus Voitot</h1>
 
-  <div class="container">
-    <div id="user-info" aria-live="polite">
-      Ei kirjautunut <button id="login-btn">Kirjaudu sisään</button>
-    </div>
-
-    <form id="addSkinForm" aria-label="Lisää uusi skin" style="display:none;">
-      <h2>Lisää uusi skin</h2>
-      <div class="row">
-        <div>
-          <label for="skinName">Skinin nimi:</label>
-          <input type="text" id="skinName" required autocomplete="off" />
-        </div>
-        <div>
-          <label for="skinPrice">Ostohinta (€):</label>
-          <input type="number" id="skinPrice" required min="0" step="0.01" />
-        </div>
-        <div>
-          <label for="skinSellPrice">Myyntihinta (€):</label>
-          <input type="number" id="skinSellPrice" required min="0" step="0.01" />
-        </div>
-        <div>
-          <label for="skinCondition">Kunto:</label>
-          <select id="skinCondition" required>
-            <option value="">Valitse...</option>
-            <option>Battle-Scarred</option>
-            <option>Well-Worn</option>
-            <option>Field-Tested</option>
-            <option>Minimal Wear</option>
-            <option>Factory New</option>
-          </select>
-        </div>
-      </div>
-      <button type="submit">Lisää</button>
-    </form>
-
-    <table id="skinTable" aria-label="Skinien lista" style="display:none;">
-      <thead>
-        <tr>
-          <th>Nimi</th>
-          <th>Ostohinta (€)</th>
-          <th>Myyntihinta (€)</th>
-          <th>Kunto</th>
-          <th>Voitto (€)</th>
-          <th>Toiminnot</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Listan rivit tulevat tähän -->
-      </tbody>
-    </table>
-
-    <div id="stats" aria-live="polite" style="display:none;">
-      <span id="totalProfit">Kokonaisvoitto: 0,00 €</span>
-      <span id="totalLoss">Kokonaistappio: 0,00 €</span>
-    </div>
+  <div id="themeButtons">
+    <button id="lightBtn">Vaalea</button>
+    <button id="darkBtn">Tumma</button>
+    <button id="blueBtn">Sininen</button>
   </div>
 
-  <!-- Firebase SDK:t -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <form id="addSkinForm" aria-label="Lisää uusi skin">
+    <div>
+      <label for="name">Skinin nimi</label>
+      <input id="name" name="name" type="text" required />
+    </div>
+    <div>
+      <label for="buyPrice">Ostohinta (€)</label>
+      <input id="buyPrice" name="buyPrice" type="number" step="0.01" required />
+    </div>
+    <div>
+      <label for="sellPrice">Myyntihinta (€)</label>
+      <input id="sellPrice" name="sellPrice" type="number" step="0.01" required />
+    </div>
+    <div>
+      <label for="condition">Kunto</label>
+      <select id="condition" name="condition" required>
+        <option value="">Valitse...</option>
+        <option value="Factory New">Factory New</option>
+        <option value="Minimal Wear">Minimal Wear</option>
+        <option value="Field-Tested">Field-Tested</option>
+        <option value="Well-Worn">Well-Worn</option>
+        <option value="Battle-Scarred">Battle-Scarred</option>
+      </select>
+    </div>
+    <div>
+      <label for="purchaseSource">Ostettu</label>
+      <select id="purchaseSource" name="purchaseSource" required>
+        <option value="">Valitse...</option>
+        <option value="Steam">Steam</option>
+        <option value="CSFloat">CSFloat</option>
+      </select>
+    </div>
+    <button type="submit" id="addSkinBtn">Lisää skin</button>
+  </form>
+
+  <table id="skinsTable" aria-label="Skinit taulukko">
+    <thead>
+      <tr>
+        <th>Nimi</th>
+        <th>Ostohinta (€)</th>
+        <th>Myyntihinta (€)</th>
+        <th>Kunto</th>
+        <th>Ostolähde</th>
+        <th>Voitto (€)</th>
+        <th>Toiminnot</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Skinit renderöidään tänne -->
+    </tbody>
+  </table>
 
   <script>
-    // Firebase-konfiguraatio, korvaa omallasi Firebase-projektista
-    const firebaseConfig = {
-      apiKey: "AIzaSyDj3YnvlbQPM5yvlYTEohrup65bQCBbwDY",
-  authDomain: "vilin-mestari-sijoitus-voitot.firebaseapp.com",
-  projectId: "vilin-mestari-sijoitus-voitot",
-  storageBucket: "vilin-mestari-sijoitus-voitot.firebasestorage.app",
-  messagingSenderId: "912067809877",
-  appId: "1:912067809877:web:84c11fc354f5372dcb7adc",
-  measurementId: "G-5683KL29W1"
-    };
+    const addSkinForm = document.getElementById('addSkinForm');
+    const skinsTableBody = document.querySelector('#skinsTable tbody');
+    let skins = [];
+    let editIndex = -1;
 
-    // Firebase init
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    // Teeman vaihtaminen ja tallennus localStorageen
-    const root = document.documentElement;
-    const themeButtons = {
-      light: document.getElementById('theme-light'),
-      dark: document.getElementById('theme-dark'),
-      blue: document.getElementById('theme-blue'),
-    };
+    // Teemapainikkeet
+    const lightBtn = document.getElementById('lightBtn');
+    const darkBtn = document.getElementById('darkBtn');
+    const blueBtn = document.getElementById('blueBtn');
 
     function setTheme(theme) {
-      if(['light','dark','blue'].includes(theme)){
-        if(theme === 'light'){
-          root.removeAttribute('data-theme');
-        } else {
-          root.setAttribute('data-theme', theme);
-        }
-        localStorage.setItem('preferredTheme', theme);
-      }
+      document.documentElement.setAttribute('data-theme', theme);
     }
 
-    const savedTheme = localStorage.getItem('preferredTheme') || 'light';
-    setTheme(savedTheme);
+    lightBtn.addEventListener('click', () => setTheme('light'));
+    darkBtn.addEventListener('click', () => setTheme('dark'));
+    blueBtn.addEventListener('click', () => setTheme('blue'));
 
-    Object.entries(themeButtons).forEach(([themeName, btn]) => {
-      btn.addEventListener('click', () => setTheme(themeName));
-    });
+    // Lomakkeen käsittely
+    addSkinForm.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-    // DOM-elementit
-    const userInfo = document.getElementById('user-info');
-    const loginBtn = document.getElementById('login-btn');
-    const addSkinForm = document.getElementById('addSkinForm');
-    const skinTableBody = document.querySelector('#skinTable tbody');
-    const skinTable = document.getElementById('skinTable');
-    const statsDiv = document.getElementById('stats');
-    const totalProfitSpan = document.getElementById('totalProfit');
-    const totalLossSpan = document.getElementById('totalLoss');
+      const name = addSkinForm.name.value.trim();
+      const buyPrice = parseFloat(addSkinForm.buyPrice.value);
+      const sellPrice = parseFloat(addSkinForm.sellPrice.value);
+      const condition = addSkinForm.condition.value;
+      const purchaseSource = addSkinForm.purchaseSource.value;
 
-    let skins = [];
-    let editingIndex = null;
-    let user = null;  // Kirjautunut käyttäjä
+      if(!name || isNaN(buyPrice) || isNaN(sellPrice) || !condition || !purchaseSource) {
+        alert('Täytä kaikki kentät oikein.');
+        return;
+      }
 
-    // Kirjautuminen Googlella
-    loginBtn.addEventListener('click', () => {
-      if(user){
-        auth.signOut();
+      const newSkin = { name, buyPrice, sellPrice, condition, purchaseSource };
+
+      if(editIndex === -1) {
+        skins.push(newSkin);
       } else {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => alert('Kirjautumisvirhe: ' + err.message));
+        skins[editIndex] = newSkin;
+        editIndex = -1;
+        addSkinForm.querySelector('button[type="submit"]').textContent = 'Lisää skin';
       }
+
+      addSkinForm.reset();
+      renderSkins();
     });
 
-    // Kun käyttäjän tila muuttuu
-    auth.onAuthStateChanged(async (u) => {
-      user = u;
-      if(user){
-        userInfo.innerHTML = `Kirjautunut: <span>${user.displayName}</span> <button id="logout-btn">Kirjaudu ulos</button>`;
-        document.getElementById('logout-btn').onclick = () => auth.signOut();
-
-        addSkinForm.style.display = 'block';
-        skinTable.style.display = '';
-        statsDiv.style.display = '';
-
-        await loadSkinsFromFirestore();
-      } else {
-        userInfo.innerHTML = `Ei kirjautunut <button id="login-btn">Kirjaudu sisään</button>`;
-        document.getElementById('login-btn').onclick = () => {
-          const provider = new firebase.auth.GoogleAuthProvider();
-          auth.signInWithPopup(provider).catch(err => alert('Kirjautumisvirhe: ' + err.message));
-        };
-
-        addSkinForm.style.display = 'none';
-        skinTable.style.display = 'none';
-        statsDiv.style.display = 'none';
-
-        skins = [];
-        renderSkins();
-      }
-    });
-
-    // Lataa skin-lista Firestoresta
-    async function loadSkinsFromFirestore() {
-      if(!user) return;
-      try {
-        const docRef = db.collection('users').doc(user.uid);
-        const doc = await docRef.get();
-        if(doc.exists && doc.data().skins){
-          skins = doc.data().skins;
-        } else {
-          skins = [];
-        }
-        renderSkins();
-      } catch(err) {
-        alert('Virhe skinejä ladattaessa: ' + err.message);
-      }
-    }
-
-    // Tallenna skin-lista Firestoreen
-    async function saveSkinsToFirestore() {
-      if(!user) return;
-      try {
-        await db.collection('users').doc(user.uid).set({ skins });
-      } catch(err) {
-        alert('Virhe skinejä tallennettaessa: ' + err.message);
-      }
-    }
-
-    // Renderöi skin-lista taulukkoon
+    // Renderöi skin-taulukko
     function renderSkins() {
-      skinTableBody.innerHTML = '';
+      skinsTableBody.innerHTML = '';
       skins.forEach((skin, i) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -456,94 +213,48 @@
           <td>${skin.buyPrice.toFixed(2)}</td>
           <td>${skin.sellPrice.toFixed(2)}</td>
           <td>${skin.condition}</td>
+          <td>${skin.purchaseSource}</td>
           <td>${(skin.sellPrice - skin.buyPrice).toFixed(2)}</td>
           <td>
             <button class="edit-btn" aria-label="Muokkaa skin ${skin.name}" data-index="${i}">Muokkaa</button>
             <button class="delete-btn" aria-label="Poista skin ${skin.name}" data-index="${i}">Poista</button>
           </td>
         `;
-        skinTableBody.appendChild(tr);
+        skinsTableBody.appendChild(tr);
       });
-      updateStats();
-      attachTableListeners();
-    }
 
-    // Päivitä voitto/tappio statsit
-    function updateStats() {
-      let totalProfit = 0;
-      let totalLoss = 0;
-      skins.forEach(skin => {
-        const profit = skin.sellPrice - skin.buyPrice;
-        if (profit >= 0) totalProfit += profit;
-        else totalLoss += profit;
-      });
-      totalProfitSpan.textContent = `Kokonaisvoitto: ${totalProfit.toFixed(2)} €`;
-      totalLossSpan.textContent = `Kokonaistappio: ${totalLoss.toFixed(2)} €`;
-    }
-
-    // Kuuntelijat muokkaa/poista-painikkeille
-    function attachTableListeners() {
+      // Lisää event listenerit muokkaus- ja poistonapeille
       document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.onclick = e => {
-          const i = +e.target.dataset.index;
-          startEditing(i);
-        };
+        btn.addEventListener('click', (e) => {
+          const i = parseInt(e.target.dataset.index);
+          editIndex = i;
+          const skin = skins[i];
+          addSkinForm.name.value = skin.name;
+          addSkinForm.buyPrice.value = skin.buyPrice;
+          addSkinForm.sellPrice.value = skin.sellPrice;
+          addSkinForm.condition.value = skin.condition;
+          addSkinForm.purchaseSource.value = skin.purchaseSource;
+          addSkinForm.querySelector('button[type="submit"]').textContent = 'Tallenna muutokset';
+        });
       });
+
       document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.onclick = e => {
-          const i = +e.target.dataset.index;
-          if(confirm('Haluatko varmasti poistaa skinin?')){
-            skins.splice(i,1);
-            saveSkinsToFirestore();
+        btn.addEventListener('click', (e) => {
+          const i = parseInt(e.target.dataset.index);
+          if(confirm(`Haluatko varmasti poistaa skinin "${skins[i].name}"?`)) {
+            skins.splice(i, 1);
+            if(editIndex === i) {
+              editIndex = -1;
+              addSkinForm.reset();
+              addSkinForm.querySelector('button[type="submit"]').textContent = 'Lisää skin';
+            }
             renderSkins();
           }
-        };
+        });
       });
     }
 
-    // Aloita muokkaus
-    function startEditing(index) {
-      editingIndex = index;
-      const skin = skins[index];
-      addSkinForm.skinName.value = skin.name;
-      addSkinForm.skinPrice.value = skin.buyPrice;
-      addSkinForm.skinSellPrice.value = skin.sellPrice;
-      addSkinForm.skinCondition.value = skin.condition;
-      addSkinForm.querySelector('button[type="submit"]').textContent = 'Tallenna muutokset';
-    }
-
-    // Tyhjennä lomake
-    function resetForm() {
-      editingIndex = null;
-      addSkinForm.reset();
-      addSkinForm.querySelector('button[type="submit"]').textContent = 'Lisää';
-    }
-
-    // Lomakkeen lähetys
-    addSkinForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = addSkinForm.skinName.value.trim();
-      const buyPrice = parseFloat(addSkinForm.skinPrice.value);
-      const sellPrice = parseFloat(addSkinForm.skinSellPrice.value);
-      const condition = addSkinForm.skinCondition.value;
-
-      if(!name || isNaN(buyPrice) || isNaN(sellPrice) || !condition){
-        alert('Täytä kaikki kentät oikein.');
-        return;
-      }
-
-      const newSkin = { name, buyPrice, sellPrice, condition };
-
-      if(editingIndex !== null){
-        skins[editingIndex] = newSkin;
-      } else {
-        skins.push(newSkin);
-      }
-
-      await saveSkinsToFirestore();
-      renderSkins();
-      resetForm();
-    });
+    renderSkins();
   </script>
 </body>
 </html>
