@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Vilin Mestari Sijoitus Voitot</title>
   <style>
-   /* Pehmeä tumma teema smoothilla efekteillä */
+   /* Arvokas, asiallinen tumma teema */
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #121212;
+  background: #121214; /* hyvin tumma, lähes musta */
   margin: 0;
-  padding: 20px;
-  color: #ddd;
+  padding: 24px 20px;
+  color: #e0d9cc; /* pehmeä kerma */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -22,100 +22,102 @@ body {
 
 h1, h2 {
   font-weight: 700;
-  color: #ff6600;
-  text-shadow: 0 2px 6px rgba(255,102,0,0.6);
-  transition: color 0.3s ease;
+  color: #c9a66b; /* kultaan vivahtava */
+  text-shadow: 0 2px 4px rgba(201, 166, 107, 0.6);
+  letter-spacing: 1px;
 }
 
 .container {
   max-width: 960px;
   width: 100%;
-  background: linear-gradient(145deg, #1f1f1f, #171717);
-  box-shadow: 0 8px 20px rgba(255, 102, 0, 0.4);
+  background: linear-gradient(145deg, #1d1d1f, #121214);
+  box-shadow: 0 6px 16px rgba(201, 166, 107, 0.4);
   border-radius: 12px;
-  padding: 40px 50px;
+  padding: 40px 48px;
   box-sizing: border-box;
   transition: box-shadow 0.3s ease;
 }
 
 .container:hover {
-  box-shadow: 0 10px 30px rgba(255, 102, 0, 0.6);
+  box-shadow: 0 8px 24px rgba(201, 166, 107, 0.55);
 }
 
 #user-info {
-  margin-bottom: 30px;
+  margin-bottom: 28px;
   font-size: 1.15rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #2f2f2f;
-  padding: 14px 25px;
+  background: #292922; /* tumma oliivi/harmaa */
+  padding: 16px 28px;
   border-radius: 10px;
-  box-shadow: inset 0 0 12px #ff6600cc;
+  box-shadow: inset 0 0 12px #c9a66baa;
   user-select: none;
   transition: background-color 0.4s ease;
 }
 
 #user-info:hover {
-  background-color: #3b3b3b;
+  background-color: #3a3a30;
 }
 
 #user-info span {
   font-weight: 700;
-  color: #ff6600;
-  text-shadow: 0 1px 3px #bb4a00;
+  color: #c9a66b;
+  text-shadow: 0 1px 2px #856f38;
 }
 
 button {
-  background: linear-gradient(145deg, #ff6f00, #ff5500);
-  color: white;
+  background: linear-gradient(145deg, #b18a3b, #9d7c2d);
+  color: #f4eddc;
   border: none;
-  padding: 12px 20px;
+  padding: 12px 22px;
   border-radius: 12px;
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.35s ease, box-shadow 0.35s ease;
   user-select: none;
-  box-shadow: 0 5px 12px rgba(255, 102, 0, 0.7);
+  box-shadow: 0 4px 10px rgba(177, 138, 59, 0.7);
+  font-weight: 700;
+  letter-spacing: 0.7px;
 }
 button:hover {
-  background: linear-gradient(145deg, #ff8a1a, #ff6c00);
-  box-shadow: 0 7px 18px rgba(255, 110, 0, 0.9);
+  background: linear-gradient(145deg, #c4aa51, #b3963b);
+  box-shadow: 0 6px 16px rgba(196, 170, 81, 0.9);
 }
 button:disabled {
-  background: #ffb87a;
+  background: #d1caa8;
   cursor: not-allowed;
   box-shadow: none;
-  color: #4a2b00;
+  color: #6e5f37;
 }
 
 form#addSkinForm {
   margin-bottom: 40px;
-  background: linear-gradient(160deg, #292929, #1b1b1b);
+  background: linear-gradient(160deg, #2a2a26, #1b1b19);
   border-radius: 14px;
-  padding: 30px 30px;
-  box-shadow: 0 6px 18px rgba(255, 102, 0, 0.15);
+  padding: 36px 36px;
+  box-shadow: 0 6px 18px rgba(201, 166, 107, 0.15);
   transition: box-shadow 0.4s ease;
 }
 form#addSkinForm:hover {
-  box-shadow: 0 8px 25px rgba(255, 102, 0, 0.3);
+  box-shadow: 0 8px 26px rgba(201, 166, 107, 0.3);
 }
 
 form#addSkinForm h2 {
   margin-top: 0;
   margin-bottom: 22px;
   font-size: 1.5rem;
-  color: #ff6600;
-  text-shadow: 0 1px 3px #bb4a00;
+  color: #c9a66b;
+  text-shadow: 0 1px 3px #856f38;
   letter-spacing: 1px;
 }
 
 form#addSkinForm label {
   display: block;
   margin-bottom: 14px;
-  font-weight: 700;
-  color: #ddd;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: #d6cdbb;
+  letter-spacing: 0.4px;
 }
 
 form#addSkinForm input[type="text"],
@@ -127,17 +129,17 @@ form#addSkinForm select {
   border: none;
   border-radius: 14px;
   box-sizing: border-box;
-  background: #181818;
-  color: #eee;
-  box-shadow: inset 0 0 8px #333;
+  background: #232320;
+  color: #dcd6c8;
+  box-shadow: inset 0 0 8px #4a4635;
   transition: box-shadow 0.3s ease, background-color 0.3s ease;
 }
 form#addSkinForm input[type="text"]:focus,
 form#addSkinForm input[type="number"]:focus,
 form#addSkinForm select:focus {
-  box-shadow: 0 0 12px #ff6600cc;
+  box-shadow: 0 0 12px #c9a66baa;
   outline: none;
-  background: #220f00;
+  background: #2e2c26;
 }
 
 form#addSkinForm .buttons {
@@ -159,13 +161,13 @@ form#addSkinForm .buttons button:hover:not(:disabled) {
 /* Tilastot */
 #stats {
   margin-bottom: 40px;
-  background: #3a3a3a;
-  padding: 24px 36px;
+  background: #3e3c35;
+  padding: 26px 38px;
   border-radius: 14px;
-  box-shadow: inset 0 0 14px #ff6600cc;
-  color: #ffad7a;
+  box-shadow: inset 0 0 14px #c9a66baa;
+  color: #dbcfa9;
   font-weight: 600;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
   transition: background-color 0.3s ease;
 }
 #stats p {
@@ -182,15 +184,15 @@ form#addSkinForm .buttons button:hover:not(:disabled) {
   width: 100%;
   max-width: 320px;
   margin-bottom: 28px;
-  background: #1e1e1e;
-  color: #eee;
-  box-shadow: inset 0 0 10px #333;
+  background: #292820;
+  color: #ddd6bb;
+  box-shadow: inset 0 0 10px #4a4635;
   transition: box-shadow 0.3s ease, background-color 0.3s ease;
 }
 #searchInput:focus {
-  box-shadow: 0 0 14px #ff6600cc;
+  box-shadow: 0 0 14px #c9a66baa;
   outline: none;
-  background: #2a1300;
+  background: #3c3a30;
 }
 
 /* Taulukko */
@@ -198,32 +200,31 @@ table#skinsTable {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 8px;
-  box-shadow: 0 4px 22px rgba(255, 102, 0, 0.4);
+  box-shadow: 0 5px 18px rgba(201, 166, 107, 0.4);
   border-radius: 14px;
   overflow: hidden;
-  background: #252525;
-  color: #ddd;
+  background: #2a2a27;
+  color: #d4cda6;
   transition: box-shadow 0.4s ease;
 }
 table#skinsTable:hover {
-  box-shadow: 0 6px 30px rgba(255, 102, 0, 0.6);
+  box-shadow: 0 7px 26px rgba(201, 166, 107, 0.55);
 }
 
 table#skinsTable thead tr {
-  background-color: #ff6600;
-  color: #1e1e1e;
+  background-color: #b3974f;
+  color: #2a2a27;
   user-select: none;
   border-radius: 14px 14px 0 0;
-  box-shadow: 0 3px 12px #ff6600aa;
+  box-shadow: 0 3px 14px #b3974faa;
 }
 table#skinsTable thead th {
-  padding: 14px 18px;
+  padding: 14px 20px;
   font-weight: 700;
   font-size: 1.05rem;
   cursor: pointer;
   position: relative;
   user-select: none;
-  transition: background-color 0.3s ease;
   border: none;
 }
 /* Lajittelun nuolet */
@@ -237,78 +238,79 @@ th.sort-desc::after {
   border: 7px solid transparent;
 }
 th.sort-asc::after {
-  border-bottom-color: #1e1e1e;
+  border-bottom-color: #2a2a27;
 }
 th.sort-desc::after {
-  border-top-color: #1e1e1e;
+  border-top-color: #2a2a27;
 }
 
 table#skinsTable tbody tr {
-  background-color: #333333;
-  box-shadow: 0 2px 6px #ff6600aa;
+  background-color: #3a382f;
+  box-shadow: 0 2px 6px #b3974faa;
   border-radius: 14px;
   transition: background-color 0.3s ease;
 }
 table#skinsTable tbody tr:hover {
-  background-color: #4d2a00;
-  box-shadow: 0 3px 10px #ff6600cc;
-  color: #fff;
+  background-color: #4b472f;
+  box-shadow: 0 3px 12px #bfae68cc;
+  color: #f9f6e4;
 }
 
 table#skinsTable th, table#skinsTable td {
-  padding: 14px 18px;
+  padding: 14px 20px;
   text-align: center;
   border: none;
   user-select: none;
   font-weight: 600;
+  color: #d4cda6;
 }
 
 .profit {
-  background-color: #4a7d15;
-  color: #b9ff5a;
+  background-color: #5d7235;
+  color: #d7e6b6;
   font-weight: 700;
-  border-radius: 10px;
-  padding: 6px 12px;
-  box-shadow: 0 2px 8px #aaff0033;
+  border-radius: 12px;
+  padding: 6px 14px;
+  box-shadow: 0 2px 10px #b6c682aa;
   transition: background-color 0.3s ease;
 }
 .loss {
-  background-color: #8a1a1a;
-  color: #ff7878;
+  background-color: #7f4141;
+  color: #e0b0a0;
   font-weight: 700;
-  border-radius: 10px;
-  padding: 6px 12px;
-  box-shadow: 0 2px 8px #ff000033;
+  border-radius: 12px;
+  padding: 6px 14px;
+  box-shadow: 0 2px 10px #cc8c8caa;
   transition: background-color 0.3s ease;
 }
 
 /* Toimintopainikkeet */
 table#skinsTable button {
-  background: linear-gradient(145deg, #cc5200, #e06400);
-  padding: 8px 14px;
+  background: linear-gradient(145deg, #9a7e3a, #a98c42);
+  padding: 8px 16px;
   font-size: 1rem;
   margin: 0 6px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(204, 82, 0, 0.8);
-  color: #fff;
+  box-shadow: 0 4px 12px rgba(154, 126, 58, 0.85);
+  color: #f4eddc;
   font-weight: 700;
   cursor: pointer;
   user-select: none;
   transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
 }
 table#skinsTable button:hover {
-  background: linear-gradient(145deg, #e07900, #cc5500);
-  box-shadow: 0 6px 16px rgba(255, 105, 0, 1);
+  background: linear-gradient(145deg, #b49e5d, #bba85f);
+  box-shadow: 0 6px 16px rgba(190, 167, 73, 1);
   transform: scale(1.1);
 }
 
 /* Responsiivisuus */
 @media (max-width: 720px) {
   .container {
-    padding: 30px 25px;
+    padding: 30px 28px;
   }
   table#skinsTable th, table#skinsTable td {
-    padding: 10px 8px;
+    padding: 10px 12px;
     font-size: 0.9rem;
   }
   #searchInput {
@@ -324,10 +326,9 @@ table#skinsTable button:hover {
   }
   button {
     font-size: 1rem;
-    padding: 10px 16px;
+    padding: 10px 18px;
   }
 }
-
 
   </style>
 </head>
